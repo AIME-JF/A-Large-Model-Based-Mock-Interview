@@ -1,79 +1,136 @@
 <template>
-  <div class="login-container">
-    <div class="background-gradient"></div>
-    
-    <div class="login-form">
-      <h2>{{ isRegisterMode ? '注册账户' : '用户登录' }}</h2>
-      
-      <form @submit.prevent="handleSubmit">
-        <div class="input-group">
-          <span class="icon">👤</span>
-          <input 
-            type="text" 
-            v-model="formData.username" 
-            placeholder="用户名" 
-            required
-          />
+  <div class="login-page">
+    <!-- Background decoration -->
+    <div class="login-bg">
+      <div class="login-bg-circle login-bg-circle-1"></div>
+      <div class="login-bg-circle login-bg-circle-2"></div>
+      <div class="login-bg-circle login-bg-circle-3"></div>
+    </div>
+
+    <div class="login-card">
+      <!-- Logo area -->
+      <div class="login-logo">
+        <div class="login-logo-icon">
+          <RobotOutlined style="font-size: 32px; color: #fff" />
         </div>
-        
-        <div class="input-group">
-          <span class="icon">🔒</span>
-          <input 
-            type="password" 
-            v-model="formData.password" 
-            placeholder="密码" 
-            required
+        <h1 class="login-title">AI 面试官</h1>
+        <p class="login-subtitle">智能模拟面试平台</p>
+      </div>
+
+      <!-- Form -->
+      <a-form
+        :model="formData"
+        @finish="handleSubmit"
+        layout="vertical"
+        class="login-form"
+      >
+        <a-form-item
+          name="username"
+          :rules="[{ required: true, message: '请输入用户名' }]"
+        >
+          <a-input
+            v-model:value="formData.username"
+            placeholder="用户名"
+            size="large"
+            :prefix="h(UserOutlined)"
           />
-        </div>
-        
-        <div v-if="isRegisterMode" class="input-group">
-          <span class="icon">🔒</span>
-          <input 
-            type="password" 
-            v-model="formData.confirmPassword" 
-            placeholder="确认密码" 
-            required
+        </a-form-item>
+
+        <a-form-item
+          name="password"
+          :rules="[{ required: true, message: '请输入密码' }]"
+        >
+          <a-input-password
+            v-model:value="formData.password"
+            placeholder="密码"
+            size="large"
+            :prefix="h(LockOutlined)"
           />
-        </div>
-        
-        <div v-if="isRegisterMode" class="input-group">
-          <span class="icon">📧</span>
-          <input 
-            type="email" 
-            v-model="formData.email" 
-            placeholder="邮箱地址" 
-            required
+        </a-form-item>
+
+        <a-form-item
+          v-if="isRegisterMode"
+          name="confirmPassword"
+          :rules="[{ required: true, message: '请确认密码' }]"
+        >
+          <a-input-password
+            v-model:value="formData.confirmPassword"
+            placeholder="确认密码"
+            size="large"
+            :prefix="h(LockOutlined)"
           />
-        </div>
-        
-        <button type="submit" :disabled="isLoading">
-          {{ isLoading ? '处理中...' : (isRegisterMode ? '注册' : '登录') }}
-        </button>
-      </form>
-      
-      <div class="switch-mode">
-        <span>{{ isRegisterMode ? '已有账户？' : '还没有账户？' }}</span>
-        <a @click="toggleMode" href="#">
+        </a-form-item>
+
+        <a-form-item
+          v-if="isRegisterMode"
+          name="email"
+          :rules="[{ required: true, message: '请输入邮箱' }, { type: 'email', message: '请输入正确的邮箱格式' }]"
+        >
+          <a-input
+            v-model:value="formData.email"
+            placeholder="邮箱地址"
+            size="large"
+            :prefix="h(MailOutlined)"
+          />
+        </a-form-item>
+
+        <a-form-item>
+          <a-button
+            type="primary"
+            html-type="submit"
+            :loading="isLoading"
+            block
+            size="large"
+            class="login-submit-btn"
+          >
+            {{ isRegisterMode ? '注册' : '登录' }}
+          </a-button>
+        </a-form-item>
+      </a-form>
+
+      <!-- Switch mode -->
+      <div class="login-switch">
+        <span class="login-switch-text">{{ isRegisterMode ? '已有账户？' : '还没有账户？' }}</span>
+        <a class="login-switch-link" @click="toggleMode">
           {{ isRegisterMode ? '立即登录' : '立即注册' }}
         </a>
       </div>
-      
-      <div class="guest-login">
-        <button @click="handleGuestLogin" class="guest-btn" :disabled="isLoading">
-          游客体验
-        </button>
-      </div>
-      
-      <p class="copyright">
-        © 2024 AI面试官系统. All rights reserved.
+
+      <!-- Divider -->
+      <a-divider class="login-divider">
+        <span class="login-divider-text">或</span>
+      </a-divider>
+
+      <!-- Guest login -->
+      <a-button
+        block
+        size="large"
+        :loading="isLoading"
+        class="login-guest-btn"
+        @click="handleGuestLogin"
+      >
+        <TeamOutlined />
+        游客体验
+      </a-button>
+
+      <!-- Copyright -->
+      <p class="login-copyright">
+        &copy; 2024 AI面试官系统. All rights reserved.
       </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue';
+import { ref, defineEmits, h } from 'vue';
 import { message } from 'ant-design-vue';
+import {
+  UserOutlined,
+  LockOutlined,
+  MailOutlined,
+  RobotOutlined,
+  TeamOutlined,
+} from '@ant-design/icons-vue';
 
 const emits = defineEmits(['login-success']);
 
@@ -87,10 +144,8 @@ const formData = ref({
   email: ''
 });
 
-// 切换登录/注册模式
 const toggleMode = () => {
   isRegisterMode.value = !isRegisterMode.value;
-  // 清空表单
   formData.value = {
     username: '',
     password: '',
@@ -99,16 +154,14 @@ const toggleMode = () => {
   };
 };
 
-// 处理表单提交
 const handleSubmit = async () => {
   if (isLoading.value) return;
-  
-  // 表单验证
+
   if (!formData.value.username || !formData.value.password) {
     message.error('请填写用户名和密码');
     return;
   }
-  
+
   if (isRegisterMode.value) {
     if (formData.value.password !== formData.value.confirmPassword) {
       message.error('两次输入的密码不一致');
@@ -119,25 +172,22 @@ const handleSubmit = async () => {
       return;
     }
   }
-  
+
   isLoading.value = true;
-  
+
   try {
-    // 模拟API调用
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     if (isRegisterMode.value) {
-      // 注册逻辑
       message.success('注册成功！请登录');
       toggleMode();
     } else {
-      // 登录逻辑
       const userData = {
         username: formData.value.username,
         userId: 'user_' + Date.now(),
         loginTime: new Date().toISOString()
       };
-      
+
       message.success('登录成功！');
       emits('login-success', userData);
     }
@@ -148,22 +198,21 @@ const handleSubmit = async () => {
   }
 };
 
-// 游客登录
 const handleGuestLogin = async () => {
   if (isLoading.value) return;
-  
+
   isLoading.value = true;
-  
+
   try {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     const guestData = {
       username: '游客用户',
       userId: 'guest_' + Date.now(),
       loginTime: new Date().toISOString(),
       isGuest: true
     };
-    
+
     message.success('游客登录成功！');
     emits('login-success', guestData);
   } catch (error) {
@@ -175,184 +224,179 @@ const handleGuestLogin = async () => {
 </script>
 
 <style scoped>
-/* 基本布局 */
-.login-container {
+.login-page {
   position: relative;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   overflow: hidden;
 }
 
-/* 背景渐变 */
-.background-gradient {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  z-index: -1;
-}
-
-/* 登录表单容器 (毛玻璃效果) */
-.login-form {
-  padding: 40px;
-  width: 380px;
-  
-  /* 核心：毛玻璃效果 */
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-}
-
-/* 标题样式 */
-.login-form h2 {
-  color: #fff;
-  text-align: center;
-  font-size: 24px;
-  font-weight: 600;
-  margin-top: 0;
-  margin-bottom: 35px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-/* 输入组样式 */
-.input-group {
-  position: relative;
-  margin-bottom: 25px;
-}
-
-.input-group .icon {
+/* Background circles */
+.login-bg {
   position: absolute;
-  left: 15px;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.login-bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.login-bg-circle-1 {
+  width: 600px;
+  height: 600px;
+  top: -200px;
+  right: -100px;
+}
+
+.login-bg-circle-2 {
+  width: 400px;
+  height: 400px;
+  bottom: -100px;
+  left: -80px;
+}
+
+.login-bg-circle-3 {
+  width: 200px;
+  height: 200px;
   top: 50%;
-  transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 16px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.03);
 }
 
-.input-group input {
-  width: 100%;
-  padding: 15px 15px 15px 45px;
-  box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-  color: #fff;
-  font-size: 16px;
-  outline: none;
-  transition: all 0.3s ease;
+/* Card */
+.login-card {
+  position: relative;
+  width: 420px;
+  padding: 40px 36px 32px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  z-index: 1;
 }
 
-.input-group input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+/* Logo */
+.login-logo {
+  text-align: center;
+  margin-bottom: 32px;
 }
 
-.input-group input:focus {
-  border-color: rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.3);
+.login-logo-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, #1677ff, #69b1ff);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(22, 119, 255, 0.3);
 }
 
-/* 按钮样式 */
-button {
-  width: 100%;
-  padding: 15px;
-  border: none;
-  border-radius: 10px;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  background: linear-gradient(90deg, #a062f5, #673ab7);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  margin-bottom: 15px;
+.login-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin: 0 0 4px;
 }
 
-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+.login-subtitle {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin: 0;
 }
 
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
+/* Form */
+.login-form {
+  margin-bottom: 0;
 }
 
-/* 游客登录按钮 */
-.guest-btn {
-  background: linear-gradient(90deg, #4CAF50, #45a049);
+.login-form :deep(.ant-input-affix-wrapper) {
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.login-form :deep(.ant-form-item) {
   margin-bottom: 20px;
 }
 
-.guest-btn:hover:not(:disabled) {
-  background: linear-gradient(90deg, #45a049, #3d8b40);
+.login-submit-btn {
+  height: 44px !important;
+  border-radius: 8px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
 }
 
-/* 模式切换 */
-.switch-mode {
+/* Switch mode */
+.login-switch {
   text-align: center;
-  margin: 20px 0;
-  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 16px;
+}
+
+.login-switch-text {
+  color: #8c8c8c;
   font-size: 14px;
 }
 
-.switch-mode a {
-  color: #a062f5;
-  text-decoration: none;
-  font-weight: bold;
-  margin-left: 5px;
+.login-switch-link {
+  color: #1677ff;
+  font-weight: 600;
   cursor: pointer;
-  transition: color 0.3s ease;
+  margin-left: 4px;
 }
 
-.switch-mode a:hover {
-  color: #fff;
+.login-switch-link:hover {
+  color: #4096ff;
 }
 
-/* 游客登录区域 */
-.guest-login {
-  margin: 20px 0;
-  text-align: center;
+/* Divider */
+.login-divider {
+  margin: 16px 0 !important;
 }
 
-/* 版权信息 */
-.copyright {
-  text-align: center;
-  margin-top: 30px;
-  margin-bottom: 0;
+.login-divider-text {
+  color: #bfbfbf;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
 }
 
-/* 响应式设计 */
+/* Guest btn */
+.login-guest-btn {
+  height: 44px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  color: #595959 !important;
+  border-color: #d9d9d9 !important;
+}
+
+.login-guest-btn:hover {
+  color: #1677ff !important;
+  border-color: #1677ff !important;
+}
+
+/* Copyright */
+.login-copyright {
+  text-align: center;
+  margin: 24px 0 0;
+  font-size: 12px;
+  color: #bfbfbf;
+}
+
+/* Responsive */
 @media (max-width: 480px) {
-  .login-form {
-    width: 90%;
-    padding: 30px 20px;
+  .login-card {
+    width: 92%;
+    padding: 32px 24px 24px;
   }
-  
-  .login-form h2 {
+
+  .login-title {
     font-size: 20px;
-    margin-bottom: 25px;
-  }
-  
-  .input-group input {
-    padding: 12px 12px 12px 40px;
-    font-size: 14px;
-  }
-  
-  button {
-    padding: 12px;
-    font-size: 16px;
   }
 }
 </style>

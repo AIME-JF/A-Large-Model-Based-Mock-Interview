@@ -21,7 +21,6 @@ export const getAvailableDomains = async () => {
     const response = await apiClient.get('/domains');
     return response.data.domains;
   } catch (error) {
-    console.error('获取领域列表失败:', error);
     // 返回默认领域列表
     return ['人工智能', '大数据', '物联网'];
   }
@@ -37,7 +36,6 @@ export const getDomainRoles = async (domain) => {
     const response = await apiClient.get(`/roles/${domain}`);
     return response.data.roles;
   } catch (error) {
-    console.error('获取岗位列表失败:', error);
     // 返回默认岗位列表
     const defaultRoles = {
       '人工智能': ['算法工程师', '数据科学家', 'AI产品经理'],
@@ -59,7 +57,6 @@ export const getInterviewQuestions = async (domain, role) => {
     const response = await apiClient.get(`/questions/${domain}/${role}`);
     return response.data.questions;
   } catch (error) {
-    console.error('获取面试问题失败:', error);
     // 返回默认问题
     return getDefaultQuestions(domain, role);
   }
@@ -77,7 +74,6 @@ export const getInterviewQuestions = async (domain, role) => {
  */
 export const analyzeInterview = async (params) => {
   try {
-    console.log('正在调用分析接口...', params);
     
     // 验证必要参数
     if (!params.chatHistory || !Array.isArray(params.chatHistory) || params.chatHistory.length === 0) {
@@ -97,7 +93,6 @@ export const analyzeInterview = async (params) => {
       includeMultimodal: params.includeMultimodal !== undefined ? params.includeMultimodal : false
     };
     
-    console.log('发送请求数据:', requestData);
     const response = await apiClient.post('/analyze-interview', requestData);
     
     // 检查是否有错误
@@ -107,11 +102,9 @@ export const analyzeInterview = async (params) => {
     
     return response.data;
   } catch (error) {
-    console.error('分析失败:', error);
     
     // 如果是网络错误或服务器错误，使用备用分析方法
     if (error.response && error.response.status >= 400) {
-      console.log('服务器错误，使用备用分析方法...');
       return await mockAnalyzeInterview(params);
     }
     
@@ -132,11 +125,9 @@ export const analyzeInterview = async (params) => {
  */
 export const analyzeMultimodal = async (params) => {
   try {
-    console.log('正在进行多模态分析...', params);
     const response = await apiClient.post('/analyze-multimodal', params);
     return response.data;
   } catch (error) {
-    console.error('多模态分析失败:', error);
     throw error;
   }
 };
@@ -150,7 +141,6 @@ export const healthCheck = async () => {
     const response = await apiClient.get('/health');
     return response.data;
   } catch (error) {
-    console.error('健康检查失败:', error);
     return { status: 'unhealthy', error: error.message };
   }
 };
@@ -164,7 +154,6 @@ export const testStaticAnalysis = async () => {
     const response = await apiClient.get('/test-static-analysis');
     return response.data;
   } catch (error) {
-    console.error('静态分析测试失败:', error);
     throw error;
   }
 };

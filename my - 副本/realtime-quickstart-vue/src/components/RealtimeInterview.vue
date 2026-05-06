@@ -72,18 +72,14 @@
 
         <!-- 操作按钮 -->
         <div class="action-buttons">
-          <button @click="backToInterview" class="action-btn back-btn">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+          <a-button type="primary" size="large" @click="backToInterview" class="action-btn back-btn">
+            <template #icon><ArrowLeftOutlined /></template>
             返回面试
-          </button>
-          <button @click="emits('go-home')" class="action-btn home-btn">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+          </a-button>
+          <a-button size="large" @click="emits('go-home')" class="action-btn home-btn">
+            <template #icon><HomeOutlined /></template>
             返回首页
-          </button>
+          </a-button>
         </div>
       </div>
     </div>
@@ -105,56 +101,61 @@
 
         <!-- 摄像头控制区域 -->
         <div class="camera-control-section">
-          <h3 class="section-title">摄像头控制</h3>
+          <h3 class="section-title"><VideoCameraOutlined style="margin-right: 6px;" />摄像头控制</h3>
           <div class="camera-control-buttons">
-            <button 
+            <a-button
+              type="primary"
               @click="enableCamera"
-              class="camera-btn enable-btn"
               :disabled="isCameraLoading"
+              :loading="isCameraLoading"
+              style="background: #52c41a; border-color: #52c41a;"
             >
+              <template #icon><CameraOutlined /></template>
               开启摄像头
-            </button>
-            <button 
+            </a-button>
+            <a-button
+              danger
               @click="disableCamera"
-              class="camera-btn disable-btn"
               :disabled="isCameraLoading"
             >
+              <template #icon><CloseCircleOutlined /></template>
               关闭摄像头
-            </button>
-            <button 
+            </a-button>
+            <a-button
+              type="primary"
               @click="toggleCamera"
-              class="camera-btn toggle-btn"
               :disabled="isCameraLoading"
             >
+              <template #icon><SwapOutlined /></template>
               切换摄像头
-            </button>
+            </a-button>
           </div>
           
           <!-- 摄像头状态信息 -->
           <div class="camera-status-info">
             <div class="status-item">
-              <span class="status-label">摄像头状态:</span>
-              <span class="status-value" :class="{ 'active': isCameraEnabled }">
+              <span class="status-label"><VideoCameraOutlined style="margin-right: 4px;" />摄像头状态:</span>
+              <a-tag :color="isCameraEnabled ? 'success' : 'default'" size="small">
                 {{ isCameraEnabled ? '已开启' : '已关闭' }}
-              </span>
+              </a-tag>
             </div>
             <div class="status-item">
-              <span class="status-label">浏览器支持:</span>
-              <span class="status-value" :class="{ 'active': browserSupport }">
+              <span class="status-label"><CheckCircleOutlined style="margin-right: 4px;" />浏览器支持:</span>
+              <a-tag :color="browserSupport ? 'success' : 'error'" size="small">
                 {{ browserSupport ? '支持' : '不支持' }}
-              </span>
+              </a-tag>
             </div>
             <div class="status-item">
-              <span class="status-label">权限状态:</span>
-              <span class="status-value">{{ permissionStatus }}</span>
+              <span class="status-label"><SyncOutlined style="margin-right: 4px;" />权限状态:</span>
+              <a-tag size="small">{{ permissionStatus }}</a-tag>
             </div>
           </div>
         </div>
 
         <!-- 语音控制区域 -->
         <div class="voice-control-section">
-          <h3 class="section-title">语音控制</h3>
-          
+          <h3 class="section-title"><AudioOutlined style="margin-right: 6px;" />语音控制</h3>
+
           <!-- 通话控制区域 -->
           <div class="call-controls">
             <div class="call-buttons-row">
@@ -162,29 +163,28 @@
               <div class="invoke-button-wrapper" :class="{ 'invoke-loading': isConnecting }">
                 <div class="invoke-button" @click="handleRTCConnect">
                   <div class="invoke-btn">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iMjQiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCA0QzEyLjk1IDQgNCAxMi45NSA0IDI0QzQgMzUuMDUgMTIuOTUgNDQgMjQgNDRDMzUuMDUgNDQgNDQgMzUuMDUgNDQgMjRDNDQgMTIuOTUgMzUuMDUgNCAyNCA0WiIgZmlsbD0iIzE4OTBGRiIvPgo8cGF0aCBkPSJNMzIgMjRMMjQgMTZMMTYgMjRMMjQgMzJMMzIgMjRaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" alt="call">
-                    <img v-if="!isConnecting" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIyIDEwLjVWMTdIMjJWMjAuNUwyMCAyMlYxN0gxOFYxMC41SDE2VjE5SDE4VjI0SDIwVjE5SDIyVjEwLjVIMjJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" class="invoke-icon" alt="phone">
-                    <div v-else class="invoke-loading-icon"></div>
+                    <PhoneOutlined v-if="!isConnecting" class="invoke-icon-antd" />
+                    <LoadingOutlined v-else class="invoke-icon-antd invoke-spinning" />
                   </div>
                   <div class="invoke-text">{{ isConnecting ? '连接中' : '通话' }}</div>
                 </div>
-          </div>
+              </div>
 
               <!-- 挂断按钮 -->
               <div v-if="isConnected" class="leave-button-wrapper">
                 <div class="leave-button" @click="handleDisconnect">
                   <div class="leave-btn">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjA5IDE1LjU5TDE2LjY3IDlMMTggMTAuNDFMMTEuNDIgMTdMMTggMjMuNTlMMTYuNjcgMjVMMTAuMDkgMTguNDFMMTMuNjcgMTQuODNMMTIuMjYgMTMuNDJMMTAuMDkgMTUuNTlaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" alt="leave" class="leave-icon">
+                    <PoweroffOutlined class="leave-icon-antd" />
                   </div>
                   <div class="leave-text">挂断</div>
                 </div>
               </div>
-              
+
               <!-- 结束面试按钮 -->
               <div v-if="isConnected" class="end-interview-button-wrapper">
                 <div class="end-interview-button" @click="handleEndInterview">
                   <div class="end-interview-btn">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyQzIgMTcuNTIgNi40OCAyMiAxMiAyMkMxNy41MiAyMiAyMiAxNy41MiAyMiAxMkMyMiA2LjQ4IDE3LjUyIDIgMTIgMloiIGZpbGw9IiNGRjQ0NDQiLz4KPHBhdGggZD0iTTE1IDlMMTkgMTNMMTUgMTdMMTYuNDEgMTUuNTlMMTguODMgMTNMMTYuNDEgMTAuNDFMMTUgOVoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=" alt="end" class="end-interview-icon">
+                    <StopOutlined class="end-interview-icon-antd" />
                   </div>
                   <div class="end-interview-text">结束面试</div>
                 </div>
@@ -198,29 +198,22 @@
 
           <div class="connection-status">
             <p>连接状态: {{ connectStatus }}</p>
-          </div>
-          
-          <!-- 测试功能 -->
-          <div class="test-section">
-            <h4 class="test-title">测试功能</h4>
-            <div class="test-buttons">
-              <a-button size="small" @click="addTestMessage">
-                添加测试消息
-              </a-button>
-              <a-button size="small" @click="addTestSubtitle">
-                添加测试字幕
-              </a-button>
-              <a-button size="small" @click="clearMessages">
-                清空消息
-              </a-button>
-              <a-button size="small" @click="showMessageCount">
-                显示消息数
-              </a-button>
-              <a-button size="small" @click="testAnalysisComplete">
-                测试分析完成
-              </a-button>
+            <div v-if="showRtcDiagnostics" class="rtc-diagnostics">
+              <div class="rtc-diagnostics-title">RTC链路诊断</div>
+              <div class="rtc-diagnostics-grid">
+                <div v-for="item in rtcDiagnosticRows" :key="item.label" class="rtc-diagnostic-item">
+                  <span class="rtc-diagnostic-label">{{ item.label }}</span>
+                  <span class="rtc-diagnostic-value" :class="{ 'diagnostic-warn': item.warn }">
+                    {{ item.value }}
+                  </span>
+                </div>
+              </div>
+              <div v-if="rtcDiagnostics.startError || rtcDiagnostics.lastRtcError || rtcDiagnostics.lastParseError" class="rtc-diagnostic-error">
+                {{ rtcDiagnostics.startError || rtcDiagnostics.lastRtcError || rtcDiagnostics.lastParseError }}
+              </div>
             </div>
           </div>
+          
         </div>
       </div>
     </div>
@@ -380,13 +373,45 @@
 <script setup>
 import { ref, onMounted, onUnmounted, defineProps, defineEmits, nextTick, computed } from 'vue';
 import { message } from 'ant-design-vue';
-import { useTokenWithPat } from '../hooks/index'; // Corrected path
-import { HomeIcon } from './Icons.js'; // Corrected path
-import { analyzeInterview, mockAnalyzeInterview } from '../utils/apiService.js'; // Import API service
-import FullscreenCamera from './FullscreenCamera.vue'; // 导入全屏摄像头组件
-import RadarChart from './RadarChart.vue'; // 导入雷达图组件
-import VirtualInterviewer from './VirtualInterviewer.vue'; // 导入3D虚拟面试官组件
-import Pagination from './Pagination.vue'; // 导入分页组件
+import {
+  HomeOutlined,
+  ArrowLeftOutlined,
+  AudioOutlined,
+  VideoCameraOutlined,
+  PhoneOutlined,
+  PoweroffOutlined,
+  StopOutlined,
+  MessageOutlined,
+  UserOutlined,
+  RobotOutlined,
+  SoundOutlined,
+  CameraOutlined,
+  SwapOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  SyncOutlined,
+  RadarChartOutlined,
+  BulbOutlined,
+  WarningOutlined,
+  BookOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  FileTextOutlined,
+  CommentOutlined,
+  ExperimentOutlined,
+  LoadingOutlined,
+} from '@ant-design/icons-vue';
+import { useTokenWithPat } from '../hooks/index';
+import { analyzeInterview, mockAnalyzeInterview } from '../utils/apiService.js';
+import {
+  getRTCMessageByteLength,
+  getRTCMessageDebugMeta,
+  parseRTCMessageBuffer,
+} from '../utils/rtcMessageParser.js';
+import FullscreenCamera from './FullscreenCamera.vue';
+import RadarChart from './RadarChart.vue';
+import VirtualInterviewer from './VirtualInterviewer.vue';
+import Pagination from './Pagination.vue';
 
 // 导入火山引擎RTC SDK
 let VERTC = null;
@@ -395,7 +420,6 @@ let RTCAIAnsExtension = null;
 // 动态导入RTC SDK
 const loadRTCLibrary = async () => {
   try {
-    console.log('尝试加载RTC SDK...');
     
     // 动态导入SDK
     const rtcModule = await import('@volcengine/rtc');
@@ -406,14 +430,11 @@ const loadRTCLibrary = async () => {
     
     // 检查SDK是否可用
     if (VERTC && typeof VERTC.createEngine === 'function') {
-      console.log('RTC SDK加载成功');
       return true;
     }
     
-    console.warn('RTC SDK未正确加载，将使用模拟模式');
     return false;
   } catch (error) {
-    console.error('加载RTC SDK失败:', error);
     return false;
   }
 };
@@ -445,6 +466,33 @@ const currentScene = ref(null);
 const rtcConfig = ref(null);
 const audioBotEnabled = ref(false);
 const subtitleEnabled = ref(true);
+const rtcDiagnostics = ref({
+  sdkLoaded: '未加载',
+  sceneId: '',
+  roomId: '',
+  userId: '',
+  botUserId: '',
+  targetUserId: '',
+  eventListeners: '未注册',
+  joinStatus: '未进房',
+  audioCapture: '未开始',
+  audioPublish: '未发布',
+  startStatus: '未开始',
+  startHttpStatus: '',
+  startRequestId: '',
+  startError: '',
+  lastRtcError: '',
+  lastConnectionReason: '',
+  binaryMessageCount: 0,
+  lastBinaryType: '',
+  lastBinarySize: 0,
+  lastBinaryAt: '',
+  lastParsedSummary: '',
+  lastParseError: '',
+  localVolume: 0,
+  localVolumeAt: '',
+  volumeEventCount: 0,
+});
 
 // 全屏摄像头组件引用
 const fullscreenCameraRef = ref(null);
@@ -484,6 +532,104 @@ const handleMessagesPageSizeChange = (pageSize) => {
   messagesCurrentPage.value = 1; // 重置到第一页
 };
 
+const formatDebugTime = () => new Date().toLocaleTimeString('zh-CN', {
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+});
+
+const updateRtcDiagnostics = (patch) => {
+  rtcDiagnostics.value = {
+    ...rtcDiagnostics.value,
+    ...patch,
+  };
+};
+
+const resetRtcDiagnostics = () => {
+  updateRtcDiagnostics({
+    sdkLoaded: '未加载',
+    eventListeners: '未注册',
+    joinStatus: '未进房',
+    audioCapture: '未开始',
+    audioPublish: '未发布',
+    startStatus: '未开始',
+    startHttpStatus: '',
+    startRequestId: '',
+    startError: '',
+    lastRtcError: '',
+    lastConnectionReason: '',
+    binaryMessageCount: 0,
+    lastBinaryType: '',
+    lastBinarySize: 0,
+    lastBinaryAt: '',
+    lastParsedSummary: '',
+    lastParseError: '',
+    localVolume: 0,
+    localVolumeAt: '',
+    volumeEventCount: 0,
+  });
+};
+
+const summarizeRTCMessage = (messageData) => {
+  if (!messageData) {
+    return '未解析';
+  }
+
+  const firstSubtitle = messageData.data?.[0];
+  if (firstSubtitle?.text) {
+    const text = firstSubtitle.text.length > 18
+      ? `${firstSubtitle.text.slice(0, 18)}...`
+      : firstSubtitle.text;
+    return `${firstSubtitle.userId || 'unknown'}: ${text}`;
+  }
+
+  if (messageData.Stage) {
+    return `状态: ${messageData.Stage.Description || messageData.Stage.Code}`;
+  }
+
+  if (messageData.text) {
+    return messageData.text.length > 18
+      ? `${messageData.text.slice(0, 18)}...`
+      : messageData.text;
+  }
+
+  return messageData.type || '未知消息';
+};
+
+const getLocalVolumeFromReport = (event) => {
+  const reports = Array.isArray(event) ? event : [event];
+  const report = reports.find(item => item?.audioPropertiesInfo) || reports[0];
+  return Math.round(report?.audioPropertiesInfo?.linearVolume || report?.volume || 0);
+};
+
+const rtcDiagnosticRows = computed(() => [
+  { label: '场景', value: rtcDiagnostics.value.sceneId || '-' },
+  { label: '房间', value: rtcDiagnostics.value.roomId || '-' },
+  { label: '用户', value: rtcDiagnostics.value.userId || '-' },
+  { label: '目标用户', value: rtcDiagnostics.value.targetUserId || '-' },
+  { label: 'AI用户', value: rtcDiagnostics.value.botUserId || '-' },
+  { label: 'SDK', value: rtcDiagnostics.value.sdkLoaded },
+  { label: '事件监听', value: rtcDiagnostics.value.eventListeners },
+  { label: '进房', value: rtcDiagnostics.value.joinStatus, warn: rtcDiagnostics.value.joinStatus.includes('失败') },
+  { label: '采集', value: rtcDiagnostics.value.audioCapture, warn: rtcDiagnostics.value.audioCapture.includes('失败') },
+  { label: '发布', value: rtcDiagnostics.value.audioPublish, warn: rtcDiagnostics.value.audioPublish.includes('失败') },
+  { label: 'AIGC启动', value: rtcDiagnostics.value.startStatus, warn: rtcDiagnostics.value.startStatus.includes('失败') },
+  { label: '火山HTTP', value: rtcDiagnostics.value.startHttpStatus || '-' },
+  { label: 'RequestId', value: rtcDiagnostics.value.startRequestId || '-' },
+  { label: '麦克风音量', value: `${rtcDiagnostics.value.localVolume} (${rtcDiagnostics.value.volumeEventCount})` },
+  { label: '二进制消息', value: `${rtcDiagnostics.value.binaryMessageCount} 条` },
+  { label: '最后消息', value: rtcDiagnostics.value.lastBinaryType || '-' },
+  { label: '消息大小', value: rtcDiagnostics.value.lastBinarySize ? `${rtcDiagnostics.value.lastBinarySize} B` : '-' },
+  { label: '最后解析', value: rtcDiagnostics.value.lastParsedSummary || '-' },
+]);
+
+const showRtcDiagnostics = computed(() => (
+  isConnecting.value ||
+  isConnected.value ||
+  rtcDiagnostics.value.startStatus !== '未开始' ||
+  !!rtcDiagnostics.value.lastRtcError
+));
+
 // 获取场景配置
 const getScenes = async () => {
   try {
@@ -499,7 +645,6 @@ const getScenes = async () => {
     }
     
     const result = await response.json();
-    console.log('获取场景配置成功:', result);
     
     // 根据服务器代码，数据应该在Result字段中
     let scenes = null;
@@ -509,25 +654,27 @@ const getScenes = async () => {
       scenes = result.scenes;
     }
     
-    console.log('解析的场景数据:', scenes);
     
     if (scenes && scenes.length > 0) {
       const firstScene = scenes[0];
-      console.log('第一个场景:', firstScene);
       
       // 根据服务器代码，场景数据结构应该是 { scene: SceneConfig, rtc: RTCConfig }
       if (firstScene.scene && firstScene.rtc) {
         currentScene.value = firstScene.scene.id;
         rtcConfig.value = firstScene.rtc;
-        console.log('设置场景ID:', currentScene.value);
-        console.log('设置RTC配置:', rtcConfig.value);
+        updateRtcDiagnostics({
+          sceneId: firstScene.scene.id,
+          roomId: firstScene.rtc.RoomId,
+          userId: firstScene.rtc.UserId,
+          targetUserId: firstScene.rtc.UserId,
+          botUserId: firstScene.scene.botName || '',
+        });
         return firstScene;
       }
     }
     
     throw new Error('没有可用的场景配置');
   } catch (error) {
-    console.error('获取场景配置失败:', error);
     message.error('获取场景配置失败: ' + error.message);
     throw error;
   }
@@ -541,32 +688,29 @@ const isMobile = () => {
 
 const initRTCClient = async () => {
   if (client.value) {
-    console.log('RTC客户端已存在，跳过初始化');
     return;
   }
 
   try {
-    console.log('开始初始化RTC客户端...');
     
     // 加载RTC SDK
     const sdkLoaded = await loadRTCLibrary();
+    updateRtcDiagnostics({
+      sdkLoaded: sdkLoaded ? '已加载' : '加载失败',
+    });
     
     // 获取场景配置
     const sceneConfig = await getScenes();
-    console.log('获取到的场景配置:', sceneConfig);
     
     // 检查设备权限
   isMobileDevice.value = isMobile();
-    console.log('是否为移动设备:', isMobileDevice.value);
     
     try {
       const permission = await navigator.permissions.query({ name: 'microphone' });
-      console.log('麦克风权限状态:', permission.state);
       if (permission.state === 'denied') {
         throw new Error('需要麦克风访问权限');
       }
     } catch (permError) {
-      console.warn('无法检查麦克风权限:', permError);
       // 继续执行，不阻止初始化
     }
 
@@ -578,11 +722,9 @@ const initRTCClient = async () => {
       sdkLoaded
     };
     
-    console.log('RTC客户端初始化成功，客户端对象:', client.value);
     connectStatus.value = 'ready';
     
   } catch (error) {
-    console.error('初始化RTC客户端失败:', error);
     message.error('初始化失败: ' + error.message);
     throw error;
   }
@@ -603,7 +745,6 @@ const formatMessageTime = (index) => {
 // 模拟连接模式
 const handleSimulatedConnect = async () => {
   try {
-    console.log('模拟RTC连接流程...');
     
     // 模拟连接延迟
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -624,7 +765,6 @@ const handleSimulatedConnect = async () => {
     }
 
     const result = await response.json();
-    console.log('模拟AIGC代理启动成功:', result);
     
     isConnected.value = true;
     audioBotEnabled.value = true;
@@ -645,7 +785,6 @@ const handleSimulatedConnect = async () => {
     
   } catch (error) {
     isConnecting.value = false;
-    console.error('模拟连接失败:', error);
     message.error('模拟连接失败: ' + error.message);
   }
 };
@@ -654,13 +793,16 @@ const handleSimulatedConnect = async () => {
 const addRTCEventListeners = () => {
   if (!rtcEngine.value) return;
   
-  console.log('添加RTC事件监听器...');
-  console.log('VERTC events:', VERTC.events);
+  updateRtcDiagnostics({
+    eventListeners: '注册中',
+  });
   
   // 错误处理
   if (VERTC.events?.onError) {
     rtcEngine.value.on(VERTC.events.onError, (error) => {
-      console.error('RTC错误:', error);
+      updateRtcDiagnostics({
+        lastRtcError: `RTC错误: ${error.errorCode || error.message || JSON.stringify(error)}`,
+      });
       message.error('RTC连接错误: ' + error.errorCode);
     });
   }
@@ -668,7 +810,6 @@ const addRTCEventListeners = () => {
   // 用户加入
   if (VERTC.events?.onUserJoined) {
     rtcEngine.value.on(VERTC.events.onUserJoined, (event) => {
-      console.log('用户加入房间:', event);
       // 只在字幕中显示，不在消息列表中重复显示
       if (subtitleEnabled.value) {
         addSubtitle(`用户 ${event.userId} 加入房间`, 'AI', true);
@@ -679,7 +820,6 @@ const addRTCEventListeners = () => {
   // 用户离开
   if (VERTC.events?.onUserLeave) {
     rtcEngine.value.on(VERTC.events.onUserLeave, (event) => {
-      console.log('用户离开房间:', event);
       // 只在字幕中显示，不在消息列表中重复显示
       if (subtitleEnabled.value) {
         addSubtitle(`用户 ${event.userId} 离开房间`, 'AI', true);
@@ -690,8 +830,12 @@ const addRTCEventListeners = () => {
   // 音频属性报告
   if (VERTC.events?.onLocalAudioPropertiesReport) {
     rtcEngine.value.on(VERTC.events.onLocalAudioPropertiesReport, (event) => {
-      // 可以用于显示音量指示器
-      console.log('本地音频属性:', event);
+      const localVolume = getLocalVolumeFromReport(event);
+      updateRtcDiagnostics({
+        localVolume,
+        localVolumeAt: formatDebugTime(),
+        volumeEventCount: rtcDiagnostics.value.volumeEventCount + 1,
+      });
     });
   }
   
@@ -699,33 +843,42 @@ const addRTCEventListeners = () => {
   if (VERTC.events?.onRemoteAudioPropertiesReport) {
     rtcEngine.value.on(VERTC.events.onRemoteAudioPropertiesReport, (event) => {
       // 可以用于显示远程用户音量
-      console.log('远程音频属性:', event);
     });
   }
   
   // 语音识别事件 - 处理AI语音转文字
   if (VERTC.events?.onAudioVolumeIndication) {
-    rtcEngine.value.on(VERTC.events.onAudioVolumeIndication, (speakers, totalVolume) => {
-      console.log('音频音量指示:', { speakers, totalVolume });
+    rtcEngine.value.on(VERTC.events.onAudioVolumeIndication, (event) => {
+      const speakers = event?.speakers || [];
+      const localSpeaker = speakers.find(s => s.userId === rtcConfig.value?.UserId);
+      if (localSpeaker) {
+        updateRtcDiagnostics({
+          localVolume: Math.round(localSpeaker.volume || 0),
+          localVolumeAt: formatDebugTime(),
+          volumeEventCount: rtcDiagnostics.value.volumeEventCount + 1,
+        });
+      }
     });
   }
   
   // 处理AIGC消息事件 - 二进制消息（字幕）
   if (VERTC.events?.onRoomBinaryMessageReceived) {
     rtcEngine.value.on(VERTC.events.onRoomBinaryMessageReceived, (event) => {
-      console.log('收到RTC二进制消息:', event);
       try {
-        // 解析二进制消息
-        const messageBuffer = event.message;
-        const messageText = new TextDecoder().decode(messageBuffer);
-        console.log('解析的消息文本:', messageText);
-        
-        // 使用新的消息解析函数
-        const messageData = parseRTCMessage(messageText);
+        const messageByteLength = getRTCMessageByteLength(event.message);
+        const messageData = parseRTCMessageBuffer(event.message);
+        const messageMeta = getRTCMessageDebugMeta(messageData);
+        updateRtcDiagnostics({
+          binaryMessageCount: rtcDiagnostics.value.binaryMessageCount + 1,
+          lastBinaryAt: formatDebugTime(),
+          lastBinarySize: messageByteLength,
+          lastBinaryType: messageMeta?.messageType || messageData?.type || '未解析',
+          lastParsedSummary: summarizeRTCMessage(messageData),
+          lastParseError: messageData ? '' : '收到二进制消息，但没有解析出字幕或状态内容',
+        });
         
         // 如果解析结果为null（被过滤的JSON数据），直接返回
         if (!messageData) {
-          console.log('消息被过滤，不进行处理');
           return;
         }
         
@@ -740,12 +893,11 @@ const addRTCEventListeners = () => {
           }
           
           if (subtitleData) {
-            const { text, definite, userId: user, paragraph, language, mode } = subtitleData;
+            const { text, definite, userId: user } = subtitleData;
             
             if (text && typeof text === 'string' && text.trim()) {
               // 过滤掉包含JSON格式的原始数据
               if (text.includes('"data"') || text.includes('"type"') || text.includes('"subtitle"')) {
-                console.log('过滤掉原始JSON数据，不显示为字幕');
                 return;
               }
               
@@ -757,17 +909,8 @@ const addRTCEventListeners = () => {
                   decodedText = JSON.parse('"' + text + '"');
                 }
               } catch (decodeError) {
-                console.log('Unicode解码失败，使用原始文本:', decodeError.message);
               }
               
-              console.log('收到字幕:', { 
-                text: decodedText, 
-                definite, 
-                user, 
-                paragraph, 
-                language, 
-                mode 
-              });
               
               // 添加字幕
               if (subtitleEnabled.value) {
@@ -778,7 +921,6 @@ const addRTCEventListeners = () => {
               
               // 如果是确定的字幕，也添加到对话列表
               if (definite !== false) {
-                const speaker = (user === 'ChatBot01' || user === 'AI') ? 'AI面试官' : '您';
                 messageList.value.push(decodedText);
                 messageTimestamps.value.push(
                   new Date().toLocaleTimeString('zh-CN', { 
@@ -796,47 +938,24 @@ const addRTCEventListeners = () => {
         if (messageData && (messageData.type === 'conv' || messageData.Stage)) {
           const { Stage } = messageData;
           const { Code, Description } = Stage || {};
-          console.log('收到状态消息:', { Code, Description });
           
           // 根据状态更新UI
           switch (Code) {
             case 2: // THINKING
-              console.log('AI正在思考...');
               break;
             case 3: // SPEAKING
-              console.log('AI正在说话...');
               break;
             case 4: // FINISHED
-              console.log('AI说话完成');
               break;
             case 5: // INTERRUPTED
-              console.log('AI被中断');
               break;
           }
         }
-        
+
       } catch (error) {
-        console.error('解析RTC消息失败:', error);
-        console.log('原始消息:', event.message);
-        
-        // 即使解析失败，也尝试添加一些字幕内容（但要过滤JSON数据）
-        try {
-          const messageText = new TextDecoder().decode(event.message);
-          if (messageText && messageText.trim()) {
-            // 过滤掉包含JSON格式的原始数据
-            if (messageText.includes('"data"') || messageText.includes('"type"') || messageText.includes('"subtitle"') || messageText.startsWith('subv{')) {
-              console.log('过滤掉原始JSON数据，不作为字幕显示');
-              return;
-            }
-            
-            console.log('使用原始消息作为字幕:', messageText);
-            if (subtitleEnabled.value) {
-              addSubtitle(messageText, 'AI', true);
-            }
-          }
-        } catch (fallbackError) {
-          console.error('备用字幕处理也失败:', fallbackError);
-        }
+        updateRtcDiagnostics({
+          lastParseError: `字幕消息解析失败: ${error.message}`,
+        });
     }
   });
   }
@@ -844,7 +963,6 @@ const addRTCEventListeners = () => {
   // 处理普通消息事件（备用）
   if (VERTC.events?.onMessageReceived) {
     rtcEngine.value.on(VERTC.events.onMessageReceived, (event) => {
-      console.log('收到普通消息:', event);
       if (event.message && event.message.text) {
         // 添加AI消息到对话列表
         messageList.value.push(event.message.text);
@@ -866,14 +984,13 @@ const addRTCEventListeners = () => {
   
   // 处理语音识别事件
   if (VERTC.events?.onAudioVolumeIndication) {
-    rtcEngine.value.on(VERTC.events.onAudioVolumeIndication, (speakers, totalVolume) => {
-      console.log('音频音量指示:', { speakers, totalVolume });
+    rtcEngine.value.on(VERTC.events.onAudioVolumeIndication, (event) => {
+      const speakers = event?.speakers || [];
       
       // 检测用户说话
       if (speakers && speakers.length > 0) {
         const userSpeaker = speakers.find(s => s.userId !== rtcConfig.value?.UserId);
         if (userSpeaker && userSpeaker.volume > 10) {
-          console.log('检测到用户说话，音量:', userSpeaker.volume);
           // 这里可以添加用户说话时的处理逻辑
         }
       }
@@ -883,14 +1000,14 @@ const addRTCEventListeners = () => {
   // 处理连接状态变化
   if (VERTC.events?.onConnectionStateChanged) {
     rtcEngine.value.on(VERTC.events.onConnectionStateChanged, (state, reason) => {
-      console.log('RTC连接状态变化:', { state, reason });
       connectStatus.value = state;
+      updateRtcDiagnostics({
+        lastConnectionReason: reason || '',
+      });
       
       if (state === 'CONNECTED' || state === 3) {
-        console.log('RTC连接成功');
         message.success('RTC连接已建立');
       } else if (state === 'DISCONNECTED' || state === 0) {
-        console.log('RTC连接断开');
         message.warning('RTC连接已断开');
       }
     });
@@ -899,9 +1016,12 @@ const addRTCEventListeners = () => {
   // 网络质量
   if (VERTC.events?.onNetworkQuality) {
     rtcEngine.value.on(VERTC.events.onNetworkQuality, (uplink, downlink) => {
-      console.log('网络质量:', { uplink, downlink });
     });
   }
+
+  updateRtcDiagnostics({
+    eventListeners: '已注册',
+  });
   
   // 模拟实时字幕更新（实际项目中应该从RTC SDK获取）
   if (isConnected.value) {
@@ -942,23 +1062,20 @@ const addRTCEventListeners = () => {
 
 // RTC消息处理函数
 const handleRTCMessage = (message) => {
-  console.log('收到RTC消息:', message);
   // 这里可以添加RTC消息处理逻辑
 };
 
 const handleRTCConnect = async () => {
   if (isConnecting.value) {
-    console.log('正在连接中，忽略重复点击');
     return;
   }
   
   isConnecting.value = true;
-  console.log('用户点击通话按钮，开始连接流程');
+  resetRtcDiagnostics();
   
   try {
     await handleConnect();
   } catch (error) {
-    console.error('连接失败:', error);
     isConnecting.value = false;
   }
 };
@@ -971,33 +1088,38 @@ const handleConnect = async () => {
 
     // 如果SDK未加载，提示用户
     if (!client.value.sdkLoaded) {
-      console.error('RTC SDK未加载，无法建立完整连接');
       message.error('RTC SDK未正确加载，请检查依赖配置');
       isConnecting.value = false;
       return;
     }
 
     // 创建RTC引擎
-    console.log('创建RTC引擎...');
     rtcEngine.value = VERTC.createEngine(rtcConfig.value.AppId);
+    updateRtcDiagnostics({
+      sdkLoaded: '已创建引擎',
+    });
     
     // 注册AI降噪扩展
     try {
       const AIAnsExtension = new RTCAIAnsExtension();
       await rtcEngine.value.registerExtension(AIAnsExtension);
       AIAnsExtension.enable();
-      console.log('AI降噪扩展已启用');
   } catch (error) {
-      console.warn('AI降噪扩展加载失败，继续执行:', error);
     }
 
     // 添加事件监听器
     addRTCEventListeners();
 
+    try {
+      rtcEngine.value.enableAudioPropertiesReport?.({ interval: 1000 });
+      rtcEngine.value.setAudioVolumeIndicationInterval?.(1000);
+    } catch (reportError) {
+      updateRtcDiagnostics({
+        lastRtcError: `音量诊断开启失败: ${reportError.message}`,
+      });
+    }
+
     // 加入房间
-    console.log('加入RTC房间...');
-    console.log('VERTC对象:', VERTC);
-    console.log('RoomProfileType:', VERTC.RoomProfileType);
     
     // 使用正确的房间配置
     const roomConfig = {
@@ -1006,8 +1128,11 @@ const handleConnect = async () => {
       roomProfileType: VERTC.RoomProfileType?.chat || 0, // 使用默认值
     };
     
-    console.log('房间配置:', roomConfig);
     
+    updateRtcDiagnostics({
+      joinStatus: '进房中',
+    });
+
     await rtcEngine.value.joinRoom(
       rtcConfig.value.Token,
       rtcConfig.value.RoomId,
@@ -1021,18 +1146,33 @@ const handleConnect = async () => {
       },
       roomConfig
     );
+    updateRtcDiagnostics({
+      joinStatus: '已进房',
+    });
 
     // 启动音频捕获
-    console.log('启动音频捕获...');
+    updateRtcDiagnostics({
+      audioCapture: '启动中',
+    });
     await rtcEngine.value.startAudioCapture();
+    updateRtcDiagnostics({
+      audioCapture: '已开始',
+    });
 
     // 发布音频流
-    console.log('发布音频流...');
-    console.log('MediaType:', VERTC.MediaType);
-    rtcEngine.value.publishStream(VERTC.MediaType?.AUDIO || 1); // 使用默认值
+    updateRtcDiagnostics({
+      audioPublish: '发布中',
+    });
+    await rtcEngine.value.publishStream(VERTC.MediaType?.AUDIO || 1); // 使用默认值
+    updateRtcDiagnostics({
+      audioPublish: '已发布',
+    });
 
     // 调用RTC StartVoiceChat API
-    console.log('启动AIGC代理...');
+    updateRtcDiagnostics({
+      startStatus: '调用中',
+      startError: '',
+    });
     const response = await fetch(`${RTC_PROXY_HOST}/proxy?Action=StartVoiceChat`, {
       method: 'POST',
       headers: {
@@ -1042,17 +1182,37 @@ const handleConnect = async () => {
         SceneID: currentScene.value
       }),
     });
+    updateRtcDiagnostics({
+      startHttpStatus: String(response.status),
+    });
 
     if (!response.ok) {
+      updateRtcDiagnostics({
+        startStatus: '失败',
+        startError: `StartVoiceChat HTTP ${response.status}`,
+      });
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const result = await response.json();
-    console.log('AIGC代理启动成功:', result);
+    const requestId = result.ResponseMetadata?.RequestId || result.ResponseMetadata?.RequestID || result.ProxyMetadata?.requestId || '';
+    updateRtcDiagnostics({
+      startRequestId: requestId,
+      startHttpStatus: String(result.ProxyMetadata?.httpStatus || response.status),
+    });
     
     if (result.ResponseMetadata && result.ResponseMetadata.Error) {
+      updateRtcDiagnostics({
+        startStatus: '失败',
+        startError: result.ResponseMetadata.Error.Message,
+      });
       throw new Error(result.ResponseMetadata.Error.Message);
     }
+
+    updateRtcDiagnostics({
+      startStatus: '已启动',
+      startError: '',
+    });
 
     isConnected.value = true;
     audioBotEnabled.value = true;
@@ -1074,7 +1234,6 @@ const handleConnect = async () => {
     
     // 添加初始字幕
     if (subtitleEnabled.value) {
-      console.log('连接成功后添加初始字幕');
       addSubtitle('AI助手已连接，可以开始对话了', 'AI', true);
       
       // 延迟添加更多测试字幕
@@ -1092,10 +1251,24 @@ const handleConnect = async () => {
     }
     
     message.success('RTC连接成功！可以开始通话了');
+
+    setTimeout(() => {
+      if (isConnected.value && rtcDiagnostics.value.binaryMessageCount === 0) {
+        updateRtcDiagnostics({
+          lastParseError: 'AIGC已启动，但还没有收到RTC二进制字幕消息',
+        });
+      }
+    }, 10000);
     
   } catch (error) {
     isConnecting.value = false;
-    console.error('RTC连接失败:', error);
+    updateRtcDiagnostics({
+      startStatus: rtcDiagnostics.value.startStatus === '调用中' ? '失败' : rtcDiagnostics.value.startStatus,
+      joinStatus: rtcDiagnostics.value.joinStatus === '进房中' ? '进房失败' : rtcDiagnostics.value.joinStatus,
+      audioCapture: rtcDiagnostics.value.audioCapture === '启动中' ? '启动失败' : rtcDiagnostics.value.audioCapture,
+      audioPublish: rtcDiagnostics.value.audioPublish === '发布中' ? '发布失败' : rtcDiagnostics.value.audioPublish,
+      lastRtcError: error.message,
+    });
     message.error('连接失败: ' + error.message);
     
     // 清理资源
@@ -1119,11 +1292,9 @@ const handleInterrupt = () => {
 
 const handleDisconnect = async () => {
   try {
-    console.log('开始断开RTC连接...');
     
     // 停止AIGC代理
     if (audioBotEnabled.value && currentScene.value) {
-      console.log('停止AIGC代理...');
       try {
         const response = await fetch(`${RTC_PROXY_HOST}/proxy?Action=StopVoiceChat`, {
           method: 'POST',
@@ -1140,10 +1311,8 @@ const handleDisconnect = async () => {
 
         if (response.ok) {
           const result = await response.json();
-          console.log('AIGC代理停止成功:', result);
         }
       } catch (aigcError) {
-        console.warn('停止AIGC代理失败:', aigcError);
         // 继续执行，不阻止断开流程
       }
     }
@@ -1182,7 +1351,6 @@ const handleDisconnect = async () => {
     // 分析应该在用户主动结束面试时进行
     
   } catch (error) {
-    console.error('断开失败:', error);
     message.error('断开失败：' + error.message);
     
     // 即使出错也要重置状态
@@ -1202,7 +1370,6 @@ const getRTCEngineState = () => {
     const state = rtcEngine.value.getConnectionState?.();
     return state || 'UNKNOWN';
   } catch (error) {
-    console.warn('获取RTC引擎状态失败:', error);
     return 'ERROR';
   }
 };
@@ -1213,43 +1380,33 @@ const safeCleanupRTCEngine = async () => {
   
   try {
     const state = getRTCEngineState();
-    console.log('清理前的RTC引擎状态:', state);
     
     // 只有在连接状态下才执行清理操作
     if (state === 'CONNECTED' || state === 3) {
       try {
         await rtcEngine.value.stopAudioCapture();
-        console.log('音频捕获已停止');
       } catch (error) {
-        console.warn('停止音频捕获失败:', error);
       }
       
       try {
         rtcEngine.value.unpublishStream(VERTC.MediaType?.AUDIO || 1);
-        console.log('音频流已取消发布');
       } catch (error) {
-        console.warn('取消发布音频流失败:', error);
       }
       
       try {
         await rtcEngine.value.leaveRoom();
-        console.log('已离开房间');
       } catch (error) {
-        console.warn('离开房间失败:', error);
       }
     }
     
     // 销毁引擎
     try {
       VERTC.destroyEngine(rtcEngine.value);
-      console.log('RTC引擎已销毁');
     } catch (error) {
-      console.warn('销毁RTC引擎失败:', error);
     }
     
     rtcEngine.value = null;
   } catch (error) {
-    console.error('安全清理RTC引擎失败:', error);
     rtcEngine.value = null;
   }
 };
@@ -1259,101 +1416,9 @@ const subtitleHistory = ref([]);
 const currentSubtitle = ref('');
 const isSubtitleLoading = ref(false);
 
-// RTC消息解析工具函数
-const parseRTCMessage = (messageText) => {
-  console.log('开始解析RTC消息:', messageText);
-  
-  // 1. 尝试标准JSON解析
-  try {
-    const jsonData = JSON.parse(messageText);
-    console.log('标准JSON解析成功:', jsonData);
-    return jsonData;
-  } catch (jsonError) {
-    console.log('标准JSON解析失败:', jsonError.message);
-  }
-  
-  // 2. 处理特殊格式消息
-  if (messageText.startsWith('subv')) {
-    console.log('检测到字幕格式消息');
-    
-    // 匹配 subv{内容} 格式（可能包含特殊字符）
-    const subtitleMatch = messageText.match(/subv\s*\{([\s\S]*)\}/);
-    if (subtitleMatch) {
-      const content = subtitleMatch[1];
-      console.log('提取的字幕内容:', content);
-      
-      // 尝试解析字幕内容
-      try {
-        const subtitleData = JSON.parse(content);
-        console.log('字幕数据解析成功:', subtitleData);
-        return subtitleData;
-      } catch (subtitleError) {
-        console.log('字幕内容JSON解析失败，过滤原始JSON内容:', subtitleError.message);
-        // 不返回原始JSON内容，避免显示乱码
-        return null;
-      }
-    }
-  }
-  
-  // 3. 处理conv格式消息
-  if (messageText.startsWith('conv')) {
-    console.log('检测到对话格式消息');
-    
-    // 匹配 conv{内容} 格式
-    const convMatch = messageText.match(/conv\s*\{([\s\S]*)\}/);
-    if (convMatch) {
-      const content = convMatch[1];
-      console.log('提取的对话内容:', content);
-      
-      try {
-        const convData = JSON.parse(content);
-        console.log('对话数据解析成功:', convData);
-        return convData;
-      } catch (convError) {
-        console.log('对话内容JSON解析失败:', convError.message);
-        return { 
-          type: 'conv', 
-          content: content
-        };
-      }
-    }
-  }
-  
-  // 4. 处理其他格式
-  if (messageText.includes('{') && messageText.includes('}')) {
-    // 尝试提取JSON部分
-    const jsonMatch = messageText.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      try {
-        const jsonData = JSON.parse(jsonMatch[0]);
-        console.log('提取的JSON数据:', jsonData);
-        return jsonData;
-      } catch (extractError) {
-        console.log('提取的JSON解析失败:', extractError.message);
-      }
-    }
-  }
-  
-  // 4. 过滤原始JSON文本，避免显示乱码
-  if (messageText.includes('"data"') || messageText.includes('"type"') || messageText.includes('"subtitle"') || messageText.startsWith('subv{')) {
-    console.log('过滤掉原始JSON数据，不作为消息返回');
-    return null;
-  }
-  
-  // 5. 使用原始文本（仅当不包含JSON格式时）
-  console.log('使用原始文本作为消息');
-  return { 
-    type: 'unknown', 
-    text: messageText,
-    definite: true,
-    userId: 'AI'
-  };
-};
-
 // 字幕切换处理
 const handleSubtitleToggle = (checked) => {
   subtitleEnabled.value = checked;
-  console.log('字幕状态切换:', checked);
   
   if (checked) {
     message.success('字幕已开启');
@@ -1364,10 +1429,8 @@ const handleSubtitleToggle = (checked) => {
 
 // 添加字幕内容
 const addSubtitle = (text, user = 'AI', isComplete = false) => {
-  console.log('添加字幕:', { text, user, isComplete, subtitleEnabled: subtitleEnabled.value });
   
   if (!subtitleEnabled.value) {
-    console.log('字幕功能已关闭，跳过添加');
     return;
   }
   
@@ -1389,18 +1452,14 @@ const addSubtitle = (text, user = 'AI', isComplete = false) => {
     subtitleHistory.value.push(subtitleItem);
     currentSubtitle.value = '';
     isSubtitleLoading.value = false;
-    console.log('字幕已添加到历史记录:', subtitleItem);
-    console.log('当前字幕历史数量:', subtitleHistory.value.length);
     
     // 强制更新视图
     nextTick(() => {
-      console.log('字幕视图已更新，当前字幕历史:', subtitleHistory.value);
     });
   } else {
     // 实时更新当前字幕
     currentSubtitle.value = text;
     isSubtitleLoading.value = true;
-    console.log('更新当前字幕:', text);
   }
 };
 
@@ -1421,7 +1480,6 @@ const clearSubtitleHistory = () => {
 
 const handleEndInterview = async () => {
   try {
-    console.log('开始结束面试流程...');
     
     // 如果还在连接中，先断开连接
     if (isConnected.value) {
@@ -1435,7 +1493,6 @@ const handleEndInterview = async () => {
       await analyzeInterviewData();
     }
   } catch (error) {
-    console.error('结束面试失败:', error);
     message.error('结束面试失败：' + error.message);
   }
 };
@@ -1449,7 +1506,6 @@ const analyzeInterviewData = async () => {
     // 如果聊天记录为空，添加一些模拟的对话内容
     let chatHistory = messageList.value;
     if (!chatHistory || chatHistory.length === 0) {
-      console.log('聊天记录为空，使用模拟数据');
       chatHistory = [
         '您好，我是AI面试官，很高兴见到您。',
         '您好，我是应聘者，很高兴参加这次面试。',
@@ -1462,7 +1518,6 @@ const analyzeInterviewData = async () => {
       ];
     }
     
-    console.log('准备分析的聊天记录:', chatHistory);
     
     // 准备分析参数
     const analysisParams = {
@@ -1479,7 +1534,6 @@ const analyzeInterviewData = async () => {
   } catch (error) {
     message.destroy();
     message.error('分析面试记录失败：' + error.message);
-    console.error('分析错误:', error);
   }
 };
 
@@ -1503,7 +1557,6 @@ const toggleMicrophone = () => {
       message.info(audioEnabled.value ? '已取消静音（模拟）' : '已静音（模拟）');
     }
   } catch (error) {
-    console.error('切换麦克风状态失败:', error);
     message.error('切换麦克风状态失败：' + error.message);
   }
 };
@@ -1580,19 +1633,11 @@ const addTestMessage = () => {
       second: '2-digit'
     })
   );
-  console.log('添加测试消息:', randomMessage);
   message.success('已添加测试消息');
 };
 
 // 测试字幕功能
 const addTestSubtitle = () => {
-  console.log('测试字幕功能被调用');
-  console.log('当前字幕状态:', {
-    subtitleEnabled: subtitleEnabled.value,
-    subtitleHistoryLength: subtitleHistory.value.length,
-    currentSubtitle: currentSubtitle.value,
-    isSubtitleLoading: isSubtitleLoading.value
-  });
   
   if (!subtitleEnabled.value) {
     message.warning('请先开启字幕功能');
@@ -1609,29 +1654,20 @@ const addTestSubtitle = () => {
   const randomSubtitle = testSubtitles[Math.floor(Math.random() * testSubtitles.length)];
   addSubtitle(randomSubtitle, 'AI', true);
   
-  console.log('添加测试字幕:', randomSubtitle);
   message.success('测试字幕已添加');
   
   // 延迟显示更新后的状态
   setTimeout(() => {
-    console.log('字幕添加后的状态:', {
-      subtitleHistoryLength: subtitleHistory.value.length,
-      currentSubtitle: currentSubtitle.value,
-      isSubtitleLoading: isSubtitleLoading.value
-    });
   }, 100);
 };
 
 const clearMessages = () => {
   messageList.value = [];
   messageTimestamps.value = [];
-  console.log('清空所有消息');
   message.success('已清空所有消息');
 };
 
 const showMessageCount = () => {
-  console.log('当前消息数量:', messageList.value.length);
-  console.log('消息内容:', messageList.value);
   message.info(`当前有 ${messageList.value.length} 条消息`);
 };
 
@@ -1640,12 +1676,10 @@ const handleAnalysisComplete = async (analysisParams) => {
   try {
     message.loading('正在分析面试记录...', 0);
     
-    console.log('开始分析面试记录:', analysisParams);
     
     // 调用星火API进行分析
     const result = await analyzeInterview(analysisParams);
     
-    console.log('分析完成，结果:', result);
     
     // 关闭加载消息
     message.destroy();
@@ -1655,12 +1689,10 @@ const handleAnalysisComplete = async (analysisParams) => {
     analysisResult.value = result;
     showAnalysisResult.value = true;
     
-    console.log('分析结果已设置，显示结果页面');
     
   } catch (error) {
     message.destroy();
     message.error('分析面试记录失败：' + error.message);
-    console.error('分析错误:', error);
   }
 };
 
@@ -1668,12 +1700,10 @@ const handleAnalysisComplete = async (analysisParams) => {
 const backToInterview = () => {
   showAnalysisResult.value = false;
   analysisResult.value = null;
-  console.log('返回面试页面');
 };
 
 // 修改测试分析完成函数
 const testAnalysisComplete = () => {
-  console.log('测试分析完成事件');
   const mockAnalysisResult = {
     feedbackData: {
       keyIssues: ['测试问题1', '测试问题2'],
@@ -1692,7 +1722,6 @@ const testAnalysisComplete = () => {
     }
   };
   
-  console.log('设置测试分析结果:', mockAnalysisResult);
   analysisResult.value = mockAnalysisResult;
   showAnalysisResult.value = true;
   message.success('已显示测试分析结果');
@@ -1701,12 +1730,10 @@ const testAnalysisComplete = () => {
 // 虚拟面试官事件处理
 const handleExpressionChanged = (expression) => {
   currentExpression.value = expression;
-  console.log('虚拟面试官表情变化:', expression);
 };
 
 const handleGesturePlayd = (gesture) => {
   lastGesture.value = gesture;
-  console.log('虚拟面试官手势:', gesture);
 };
 
 onMounted(async () => {
@@ -1715,25 +1742,21 @@ onMounted(async () => {
   checkPermissionStatus();
   
   // 不自动初始化RTC客户端，等用户点击连接时再初始化
-  console.log('组件挂载完成，等待用户操作');
 });
 
 onUnmounted(async () => {
-  console.log('RealtimeInterview组件即将卸载，清理资源...');
   
   // 如果还在连接中，先断开连接
   if (isConnected.value || isConnecting.value) {
     try {
       await handleDisconnect();
     } catch (error) {
-      console.error('组件卸载时断开连接失败:', error);
     }
   }
   
   // 确保RTC引擎被清理
   await safeCleanupRTCEngine();
   
-  console.log('RealtimeInterview组件资源清理完成');
 });
 </script>
 
@@ -2212,35 +2235,61 @@ onUnmounted(async () => {
   margin: 0;
 }
 
-/* 测试功能区域 */
-.test-section {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+.rtc-diagnostics {
+  margin-top: 8px;
+  text-align: left;
+  color: #333;
 }
 
-.test-title {
+.rtc-diagnostics-title {
+  margin-bottom: 6px;
   font-size: 12px;
   font-weight: 600;
-  color: #333;
-  margin: 0 0 8px 0;
-  text-align: center;
 }
 
-.test-buttons {
+.rtc-diagnostics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 8px;
+}
+
+.rtc-diagnostic-item {
+  min-width: 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.7);
 }
 
-.test-buttons .ant-btn {
-  font-size: 10px;
-  padding: 2px 6px;
-  height: auto;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.rtc-diagnostic-label {
+  flex: 0 0 auto;
+  color: #666;
 }
+
+.rtc-diagnostic-value {
+  min-width: 0;
+  overflow: hidden;
+  color: #111;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rtc-diagnostic-value.diagnostic-warn {
+  color: #d4380d;
+}
+
+.rtc-diagnostic-error {
+  margin-top: 6px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  background: rgba(255, 77, 79, 0.1);
+  color: #cf1322;
+  word-break: break-word;
+}
+
 
 /* 对话显示区域样式 */
 .conversation-display {

@@ -47,22 +47,18 @@ export class NetworkErrorManager {
 
   private checkNetworkStatus = () => {
     if (!navigator.onLine) {
-      console.log('network offline');
       this.setConnectStatus('reconnecting');
     }
   };
 
   private handleVisibilityChange = () => {
-    console.log('visibilitychange', document.hidden);
     if (!document.hidden) {
       if (navigator.onLine && this.isDisconnected) {
         this.isDisconnected = false;
         setTimeout(async () => {
           try {
             await this.client?.connect();
-            console.log('reconnect success');
           } catch (e) {
-            console.error('reconnect failed', e);
           }
         }, 1000);
       }
@@ -74,9 +70,7 @@ export class NetworkErrorManager {
       await this.client?.disconnect();
       this.downStartTime = null;
       this.isDisconnected = true;
-      console.log(`${prefix} disconnect success`);
     } catch (e) {
-      console.error(`${prefix} disconnect failed`, e);
     }
   };
 
@@ -86,7 +80,6 @@ export class NetworkErrorManager {
         this.downStartTime = Date.now();
       }
       const duration = Date.now() - this.downStartTime;
-      console.log('Network down duration', duration / 1000);
 
       if (duration > 20 * 1000) {
         this.handleDisconnect('network down');
@@ -110,7 +103,6 @@ export class NetworkErrorManager {
         }
       }
     } catch (e) {
-      console.error('get iceState failed', e);
       this.setConnectStatus('reconnecting');
     }
   };
@@ -154,7 +146,6 @@ export class NetworkErrorManager {
         this.handleDisconnect('local stream null');
       }
     } catch (error) {
-      console.error('Microphone access failed:', error);
       this.handleDisconnect('microphone access failed');
     }
   };

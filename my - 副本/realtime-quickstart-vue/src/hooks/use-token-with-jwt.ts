@@ -42,7 +42,6 @@ const useTokenWithJWT = () => {
       // 4. return access token
       return jwtToken.access_token;
     } catch (error) {
-      console.error('Failed to get token with jwt:', error);
       localStorage.removeItem('jwt_token');
       throw error;
     }

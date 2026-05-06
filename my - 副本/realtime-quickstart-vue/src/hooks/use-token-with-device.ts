@@ -98,7 +98,6 @@ const useTokenWithDevice = () => {
       // 5. return access token
       return deviceToken.access_token;
     } catch (error) {
-      console.error('Failed to get token with device:', error);
       localStorage.removeItem('device_token');
       throw error;
     }

@@ -4,6 +4,13 @@ from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 import json
 
+# 加载环境变量（在导入spark_analyzer之前，以便其能读取到环境变量）
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from spark_analyzer import spark_analyzer
 from static_analysis_data import static_analysis_data
 from multimodal_analyzer import multimodal_analyzer
@@ -13,7 +20,7 @@ app = FastAPI(title="多模态智能模拟面试评测系统", version="1.0.0")
 # 配置CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 在生产环境中应该设置具体的域名
+    allow_origins=["http://localhost:5173", "http://localhost:8080", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,25 +1,31 @@
 <template>
-  <div class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-100 to-indigo-100 p-4">
-    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-4xl text-center">
-      <h1 class="text-4xl font-extrabold text-gray-800 mb-6 font-inter">个性化学习推荐</h1>
-      <p class="text-xl text-gray-600 mb-8 font-inter">
+  <div class="recommendations-page">
+    <a-card class="recommendations-card" :bordered="false">
+      <h1 class="recommendations-title">个性化学习推荐</h1>
+      <p class="recommendations-desc">
         根据您的评测结果，为您推荐以下学习资源：
       </p>
 
       <div v-if="Object.keys(learningRecs).length > 0">
-        <div v-for="(items, category) in paginatedLearningRecs" :key="category" class="mb-8 p-6 bg-indigo-50 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 text-left">
-          <h2 class="text-2xl font-semibold text-indigo-700 mb-4 font-inter">
+        <div
+          v-for="(items, category) in paginatedLearningRecs"
+          :key="category"
+          class="category-section"
+        >
+          <h2 class="category-title">
+            <ReadOutlined class="category-icon" />
             {{ categoryLabels[category] }} 提升
           </h2>
-          <ul class="list-disc list-inside text-lg text-gray-700 space-y-2">
-            <li v-for="(item, index) in items" :key="index" class="font-inter">
-              <a :href="item.link" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">
+          <ul class="resource-list">
+            <li v-for="(item, index) in items" :key="index" class="resource-item">
+              <a :href="item.link" target="_blank" rel="noopener noreferrer" class="resource-link">
+                <LinkOutlined class="link-icon" />
                 {{ item.title }}
               </a>
             </li>
           </ul>
         </div>
-        
+
         <!-- 分页组件 -->
         <Pagination
           v-if="totalRecommendations > pageSize"
@@ -30,23 +36,21 @@
           @page-size-change="handlePageSizeChange"
         />
       </div>
-      <p v-else class="text-lg text-gray-700 font-inter">暂无推荐资源。</p>
+      <a-empty v-else description="暂无推荐资源" />
 
-      <button
-        @click="emits('go-home')"
-        class="bg-gray-400 text-white py-4 px-8 rounded-full shadow hover:bg-gray-500 transition-all duration-300 font-inter text-xl"
-      >
-        <HomeIcon class="inline-block mr-2" />
-        返回首页
-      </button>
-    </div>
+      <div class="back-btn-wrapper">
+        <a-button size="large" @click="emits('go-home')">
+          <HomeOutlined /> 返回首页
+        </a-button>
+      </div>
+    </a-card>
   </div>
 </template>
 
 <script setup>
 import { defineProps, defineEmits, ref, computed } from 'vue';
 import { categoryLabels } from '../utils/mockData';
-import { HomeIcon } from './Icons.js'; // 导入图标组件
+import { HomeOutlined, ReadOutlined, LinkOutlined } from '@ant-design/icons-vue';
 import Pagination from './Pagination.vue';
 
 const props = defineProps({
@@ -68,17 +72,17 @@ const totalRecommendations = computed(() => {
 // 计算分页后的推荐数据
 const paginatedLearningRecs = computed(() => {
   if (!props.learningRecs) return {};
-  
+
   const categories = Object.keys(props.learningRecs);
   const start = (currentPage.value - 1) * pageSize.value;
   const end = start + pageSize.value;
   const paginatedCategories = categories.slice(start, end);
-  
+
   const result = {};
   paginatedCategories.forEach(category => {
     result[category] = props.learningRecs[category];
   });
-  
+
   return result;
 });
 
@@ -94,5 +98,97 @@ const handlePageSizeChange = (size) => {
 </script>
 
 <style scoped>
-/* Recommendations.vue 专属样式 */
+.recommendations-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 24px;
+}
+
+.recommendations-card {
+  width: 100%;
+  max-width: 960px;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.recommendations-card :deep(.ant-card-body) {
+  padding: 32px;
+}
+
+.recommendations-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+}
+
+.recommendations-desc {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 24px;
+}
+
+.category-section {
+  background: #f0f5ff;
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  text-align: left;
+  transition: box-shadow 0.2s;
+}
+
+.category-section:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.category-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1677ff;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.category-icon {
+  font-size: 18px;
+}
+
+.resource-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.resource-item {
+  margin-bottom: 8px;
+}
+
+.resource-link {
+  font-size: 15px;
+  color: #1677ff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+
+.resource-link:hover {
+  color: #4096ff;
+  text-decoration: underline;
+}
+
+.link-icon {
+  font-size: 14px;
+}
+
+.back-btn-wrapper {
+  margin-top: 24px;
+}
 </style>

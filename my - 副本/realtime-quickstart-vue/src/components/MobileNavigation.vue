@@ -4,62 +4,62 @@
     <div class="mobile-header">
       <div class="header-content">
         <div class="logo-section">
-          <div class="logo-icon">🎯</div>
+          <AimOutlined class="logo-icon" />
           <h2 class="logo-text">AI面试官</h2>
         </div>
-        
+
         <button class="menu-toggle" @click="toggleNav">
           <span class="hamburger" :class="{ 'active': isNavOpen }"></span>
         </button>
       </div>
     </div>
-    
+
     <!-- 移动端侧边栏 -->
     <div class="mobile-sidebar" :class="{ 'sidebar-open': isNavOpen }">
       <div class="sidebar-overlay" @click="closeNav"></div>
       <div class="sidebar-content">
         <div class="user-info">
-          <div class="user-avatar">👤</div>
+          <div class="user-avatar"><UserOutlined /></div>
           <div class="user-details">
             <div class="username">{{ currentUser?.username || '用户' }}</div>
             <div class="user-status">{{ currentUser?.isGuest ? '游客模式' : '已登录' }}</div>
           </div>
         </div>
-        
+
         <nav class="mobile-nav-menu">
           <ul>
             <li :class="{ 'active': currentPage === 'home' }">
               <a @click="navigateTo('home')">
-                <span class="nav-icon">🏠</span>
+                <HomeOutlined class="nav-icon" />
                 <span class="nav-text">首页</span>
               </a>
             </li>
             <li>
               <a @click="navigateTo('interview-history')">
-                <span class="nav-icon">📊</span>
+                <BarChartOutlined class="nav-icon" />
                 <span class="nav-text">面试记录</span>
               </a>
             </li>
             <li>
               <a @click="navigateTo('analysis')">
-                <span class="nav-icon">📈</span>
+                <LineChartOutlined class="nav-icon" />
                 <span class="nav-text">能力分析</span>
               </a>
             </li>
             <li>
               <a @click="navigateTo('settings')">
-                <span class="nav-icon">⚙️</span>
+                <SettingOutlined class="nav-icon" />
                 <span class="nav-text">设置</span>
               </a>
             </li>
           </ul>
         </nav>
-        
+
         <div class="sidebar-footer">
-          <button class="logout-btn" @click="handleLogout">
-            <span class="nav-icon">🚪</span>
-            <span class="nav-text">退出登录</span>
-          </button>
+          <a-button class="logout-btn" block @click="handleLogout">
+            <template #icon><LogoutOutlined /></template>
+            退出登录
+          </a-button>
         </div>
       </div>
     </div>
@@ -68,6 +68,15 @@
 
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue';
+import {
+  AimOutlined,
+  UserOutlined,
+  HomeOutlined,
+  BarChartOutlined,
+  LineChartOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+} from '@ant-design/icons-vue';
 
 const props = defineProps({
   currentUser: Object,
@@ -111,8 +120,7 @@ const handleLogout = () => {
   left: 0;
   right: 0;
   height: 60px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  backdrop-filter: blur(10px);
+  background: #1677ff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 1001;
 }
@@ -133,6 +141,7 @@ const handleLogout = () => {
 
 .logo-icon {
   font-size: 1.5rem;
+  color: white;
 }
 
 .logo-text {
@@ -237,13 +246,13 @@ const handleLogout = () => {
   right: 0;
   width: 280px;
   height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  backdrop-filter: blur(20px);
+  background: #ffffff;
   transform: translateX(100%);
   transition: transform 0.3s ease;
   display: flex;
   flex-direction: column;
   padding-top: 60px;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.06);
 }
 
 .sidebar-open .sidebar-content {
@@ -256,18 +265,19 @@ const handleLogout = () => {
   align-items: center;
   gap: 12px;
   padding: 20px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .user-avatar {
   width: 48px;
   height: 48px;
-  background: rgba(255, 255, 255, 0.2);
+  background: #e6f4ff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
+  color: #1677ff;
 }
 
 .user-details {
@@ -275,14 +285,14 @@ const handleLogout = () => {
 }
 
 .username {
-  color: white;
+  color: #1a1a1a;
   font-weight: 600;
   font-size: 1.1rem;
   margin-bottom: 4px;
 }
 
 .user-status {
-  color: rgba(255, 255, 255, 0.7);
+  color: #999;
   font-size: 0.9rem;
 }
 
@@ -306,8 +316,8 @@ const handleLogout = () => {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 20px;
-  color: rgba(255, 255, 255, 0.8);
+  padding: 16px 24px;
+  color: #666;
   text-decoration: none;
   transition: all 0.3s ease;
   cursor: pointer;
@@ -315,8 +325,8 @@ const handleLogout = () => {
 
 .mobile-nav-menu li.active a,
 .mobile-nav-menu a:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: #e6f4ff;
+  color: #1677ff;
 }
 
 .nav-icon {
@@ -332,26 +342,23 @@ const handleLogout = () => {
 /* 侧边栏底部 */
 .sidebar-footer {
   padding: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid #f0f0f0;
 }
 
 .logout-btn {
   display: flex;
   align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
   border-radius: 8px;
-  color: white;
+  color: #666;
   font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .logout-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  color: #1677ff;
+  border-color: #1677ff;
 }
 
 /* 响应式设计 */

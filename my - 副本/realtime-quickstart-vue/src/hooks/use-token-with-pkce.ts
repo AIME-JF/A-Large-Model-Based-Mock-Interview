@@ -81,7 +81,6 @@ const useTokenWithPKCE = () => {
 
       return '';
     } catch (error) {
-      console.error('Failed to get token with pkce:', error);
       localStorage.removeItem('pkce_token');
       throw error;
     }

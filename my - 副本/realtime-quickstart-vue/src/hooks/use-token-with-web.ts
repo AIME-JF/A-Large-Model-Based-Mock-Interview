@@ -77,7 +77,6 @@ const useTokenWithWeb = () => {
 
       return '';
     } catch (error) {
-      console.error('Failed to get token with web:', error);
       localStorage.removeItem('web_token');
       throw error;
     }

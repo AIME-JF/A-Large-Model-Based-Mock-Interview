@@ -1,100 +1,91 @@
 <template>
   <div class="test-analysis-container">
-    <!-- 背景渐变 -->
-    <div class="background-gradient"></div>
-    
-    <!-- 主要内容 -->
     <div class="main-content">
-      <div class="content-card">
+      <a-card class="content-card">
         <!-- 标题区域 -->
         <div class="title-section">
           <h1 class="main-title">测试分析功能</h1>
         </div>
-        
+
         <!-- 模拟聊天记录 -->
-        <div class="section">
-          <h2 class="section-title">模拟聊天记录</h2>
+        <a-card class="section-card">
+          <h2 class="section-title">
+            <MessageOutlined style="margin-right: 8px" />
+            模拟聊天记录
+          </h2>
           <div class="chat-history">
             <div v-for="(message, index) in testChatHistory" :key="index" class="message-item">
-              <span class="message-number">{{ index + 1 }}:</span> 
+              <span class="message-number">{{ index + 1 }}:</span>
               <span class="message-text">{{ message }}</span>
             </div>
           </div>
-        </div>
-        
+        </a-card>
+
         <!-- 参数设置 -->
-        <div class="section">
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">选择领域:</label>
-              <select v-model="selectedDomain" class="form-select">
-                <option value="人工智能">人工智能</option>
-                <option value="大数据">大数据</option>
-                <option value="物联网">物联网</option>
-              </select>
+        <a-card class="section-card">
+          <a-form layout="vertical">
+            <div class="form-row">
+              <a-form-item label="选择领域" class="form-group">
+                <a-select v-model:value="selectedDomain">
+                  <a-select-option value="人工智能">人工智能</a-select-option>
+                  <a-select-option value="大数据">大数据</a-select-option>
+                  <a-select-option value="物联网">物联网</a-select-option>
+                </a-select>
+              </a-form-item>
+
+              <a-form-item label="选择岗位" class="form-group">
+                <a-input v-model:value="selectedRole" placeholder="输入岗位名称" />
+              </a-form-item>
             </div>
-            
-            <div class="form-group">
-              <label class="form-label">选择岗位:</label>
-              <input v-model="selectedRole" type="text" class="form-input" placeholder="输入岗位名称">
-            </div>
-          </div>
-        </div>
-        
+          </a-form>
+        </a-card>
+
         <!-- 测试按钮 -->
         <div class="test-buttons-section">
-          <button 
-            @click="testSparkAnalysis" 
+          <a-button
+            type="primary"
+            size="large"
+            @click="testSparkAnalysis"
             :disabled="isAnalyzing"
-            class="test-button spark-btn"
+            :loading="isAnalyzing"
           >
-            <svg v-if="isAnalyzing" class="loading-spinner" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="31.416" stroke-dashoffset="31.416">
-                <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
-                <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
-              </circle>
-            </svg>
-            <svg v-else class="button-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <template #icon><ThunderboltOutlined /></template>
             {{ isAnalyzing ? '分析中...' : '测试星火API分析' }}
-          </button>
-          
-          <button 
-            @click="testMockAnalysis" 
+          </a-button>
+
+          <a-button
+            type="primary"
+            size="large"
+            style="background: #52c41a; border-color: #52c41a"
+            @click="testMockAnalysis"
             :disabled="isAnalyzing"
-            class="test-button mock-btn"
+            :loading="isAnalyzing"
           >
-            <svg v-if="isAnalyzing" class="loading-spinner" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="31.416" stroke-dashoffset="31.416">
-                <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
-                <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
-              </circle>
-            </svg>
-            <svg v-else class="button-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 11H15M9 15H15M9 7H15M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <template #icon><FileTextOutlined /></template>
             {{ isAnalyzing ? '分析中...' : '测试静态数据分析' }}
-          </button>
+          </a-button>
         </div>
-        
+
         <!-- 分析结果 -->
         <div v-if="analysisResult" class="results-section">
           <h3 class="results-title">分析结果</h3>
-          
+
           <!-- 雷达图分数 -->
-          <div class="result-card">
-            <h4 class="result-subtitle">雷达图分数</h4>
-            
+          <a-card class="result-card">
+            <h4 class="result-subtitle">
+              <RadarChartOutlined style="margin-right: 8px" />
+              雷达图分数
+            </h4>
+
             <!-- 可视化雷达图 -->
             <div class="radar-chart-section">
-              <RadarChart 
-                :scores="analysisResult.radarChartScores" 
+              <RadarChart
+                :scores="analysisResult.radarChartScores"
                 :labels="radarLabels"
                 :size="320"
               />
             </div>
-            
+
             <!-- 分数详情 -->
             <div class="scores-details">
               <div class="scores-grid">
@@ -104,58 +95,79 @@
                 </div>
               </div>
             </div>
-          </div>
-          
+          </a-card>
+
           <!-- 关键问题定位 -->
-          <div class="result-card issues-card">
-            <h4 class="result-subtitle">关键问题定位</h4>
+          <a-card class="result-card issues-card">
+            <h4 class="result-subtitle">
+              <WarningOutlined style="margin-right: 8px; color: #ff4d4f" />
+              关键问题定位
+            </h4>
             <ul class="issues-list">
               <li v-for="(issue, index) in analysisResult.feedbackData.keyIssues" :key="index" class="issue-item">
                 {{ issue }}
               </li>
             </ul>
-          </div>
-          
+          </a-card>
+
           <!-- 改进建议 -->
-          <div class="result-card suggestions-card">
-            <h4 class="result-subtitle">改进建议</h4>
+          <a-card class="result-card suggestions-card">
+            <h4 class="result-subtitle">
+              <BulbOutlined style="margin-right: 8px; color: #52c41a" />
+              改进建议
+            </h4>
             <ul class="suggestions-list">
               <li v-for="(suggestion, index) in analysisResult.feedbackData.improvementSuggestions" :key="index" class="suggestion-item">
                 {{ suggestion }}
               </li>
             </ul>
-          </div>
-          
+          </a-card>
+
           <!-- 学习推荐 -->
-          <div v-if="Object.keys(analysisResult.learningRecommendations).length > 0" class="result-card recommendations-card">
-            <h4 class="result-subtitle">学习推荐</h4>
+          <a-card v-if="Object.keys(analysisResult.learningRecommendations).length > 0" class="result-card recommendations-card">
+            <h4 class="result-subtitle">
+              <BookOutlined style="margin-right: 8px; color: #1677ff" />
+              学习推荐
+            </h4>
             <div v-for="(items, category) in analysisResult.learningRecommendations" :key="category" class="recommendation-category">
               <h5 class="category-title">{{ category }}</h5>
               <ul class="recommendations-list">
                 <li v-for="(item, index) in items" :key="index" class="recommendation-item">
-                  <a :href="item.link" target="_blank" class="recommendation-link">{{ item.title }}</a>
+                  <a :href="item.link" target="_blank" class="recommendation-link">
+                    <LinkOutlined style="margin-right: 4px" />
+                    {{ item.title }}
+                  </a>
                 </li>
               </ul>
             </div>
-          </div>
+          </a-card>
         </div>
-        
+
         <!-- 返回按钮 -->
         <div class="back-section">
-          <button @click="$emit('go-back')" class="back-button">
-            <svg class="back-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+          <a-button @click="$emit('go-back')">
+            <template #icon><ArrowLeftOutlined /></template>
             返回
-          </button>
+          </a-button>
         </div>
-      </div>
+      </a-card>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, defineEmits } from 'vue';
+import {
+  MessageOutlined,
+  ThunderboltOutlined,
+  FileTextOutlined,
+  ArrowLeftOutlined,
+  WarningOutlined,
+  BulbOutlined,
+  BookOutlined,
+  LinkOutlined,
+  RadarChartOutlined
+} from '@ant-design/icons-vue';
 import { analyzeInterview, mockAnalyzeInterview } from '../utils/apiService.js';
 import RadarChart from './RadarChart.vue';
 
@@ -179,7 +191,7 @@ const radarLabels = ['专业知识', '岗位技能', '语言表达', '逻辑思�
 const testSparkAnalysis = async () => {
   try {
     isAnalyzing.value = true;
-    
+
     const params = {
       chatHistory: testChatHistory.value,
       domain: selectedDomain.value,
@@ -187,13 +199,11 @@ const testSparkAnalysis = async () => {
       useStaticData: false,  // 使用星火API
       includeMultimodal: false
     };
-    
-    console.log('测试星火API分析...');
+
     const result = await analyzeInterview(params);
     analysisResult.value = result;
-    
+
   } catch (error) {
-    console.error('星火API测试失败:', error);
     alert('星火API测试失败: ' + error.message);
   } finally {
     isAnalyzing.value = false;
@@ -203,7 +213,7 @@ const testSparkAnalysis = async () => {
 const testMockAnalysis = async () => {
   try {
     isAnalyzing.value = true;
-    
+
     const params = {
       chatHistory: testChatHistory.value,
       domain: selectedDomain.value,
@@ -211,13 +221,11 @@ const testMockAnalysis = async () => {
       useStaticData: true,  // 使用静态数据
       includeMultimodal: false
     };
-    
-    console.log('测试静态数据分析...');
+
     const result = await analyzeInterview(params);
     analysisResult.value = result;
-    
+
   } catch (error) {
-    console.error('静态数据分析测试失败:', error);
     alert('静态数据分析测试失败: ' + error.message);
   } finally {
     isAnalyzing.value = false;
@@ -228,80 +236,62 @@ const testMockAnalysis = async () => {
 <style scoped>
 /* 容器样式 */
 .test-analysis-container {
-  position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  overflow: hidden;
-}
-
-/* 背景渐变 */
-.background-gradient {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  z-index: 1;
+  padding: 24px;
+  background: #f5f5f5;
 }
 
 /* 主要内容 */
 .main-content {
-  position: relative;
-  z-index: 2;
   width: 100%;
   max-width: 1000px;
 }
 
 /* 内容卡片 */
 .content-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: 40px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 /* 标题区域 */
 .title-section {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 
 .main-title {
-  font-size: 3rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1677ff;
   margin: 0;
-  letter-spacing: -0.02em;
 }
 
 /* 区域样式 */
-.section {
-  margin-bottom: 32px;
+.section-card {
+  margin-bottom: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .section-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #333;
-  margin-bottom: 20px;
-  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
 }
 
 /* 聊天记录 */
 .chat-history {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 16px;
-  padding: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 16px;
 }
 
 .message-item {
@@ -317,12 +307,12 @@ const testMockAnalysis = async () => {
 
 .message-number {
   font-weight: 600;
-  color: #667eea;
+  color: #1677ff;
   margin-right: 8px;
 }
 
 .message-text {
-  color: #333;
+  color: #1a1a1a;
   line-height: 1.5;
 }
 
@@ -330,37 +320,7 @@ const testMockAnalysis = async () => {
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 8px;
-}
-
-.form-select,
-.form-input {
-  padding: 12px 16px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  font-size: 1rem;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-
-.form-select:focus,
-.form-input:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  gap: 24px;
 }
 
 /* 测试按钮 */
@@ -368,90 +328,36 @@ const testMockAnalysis = async () => {
   display: flex;
   justify-content: center;
   gap: 16px;
-  margin-bottom: 32px;
-}
-
-.test-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 24px;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
-.test-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.test-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.button-icon {
-  width: 20px;
-  height: 20px;
-}
-
-.loading-spinner {
-  width: 20px;
-  height: 20px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.spark-btn {
-  background: rgba(24, 144, 255, 0.9);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.mock-btn {
-  background: rgba(82, 196, 26, 0.9);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 24px;
 }
 
 /* 结果区域 */
 .results-section {
-  margin-top: 40px;
+  margin-top: 24px;
 }
 
 .results-title {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
-  color: #333;
+  color: #1a1a1a;
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .result-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   margin-bottom: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .result-subtitle {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 600;
-  color: #333;
+  color: #1a1a1a;
   margin-bottom: 16px;
+  display: flex;
+  align-items: center;
 }
 
 /* 雷达图部分 */
@@ -459,18 +365,16 @@ const testMockAnalysis = async () => {
   display: flex;
   justify-content: center;
   margin: 24px 0;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 16px;
+  background: #f5f5f5;
+  border-radius: 12px;
 }
 
 /* 分数详情 */
 .scores-details {
   margin-top: 24px;
   padding-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid #f0f0f0;
 }
 
 /* 分数网格 */
@@ -485,27 +389,25 @@ const testMockAnalysis = async () => {
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.8);
+  background: #f5f5f5;
   border-radius: 12px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
 }
 
 .score-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: #ffffff;
 }
 
 .score-label {
   font-weight: 600;
-  color: #333;
+  color: #1a1a1a;
 }
 
 .score-value {
   font-weight: 700;
-  color: #667eea;
+  color: #1677ff;
   font-size: 1.1em;
 }
 
@@ -522,18 +424,19 @@ const testMockAnalysis = async () => {
 .suggestion-item,
 .recommendation-item {
   padding: 8px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #f0f0f0;
   position: relative;
   padding-left: 20px;
+  color: #1a1a1a;
 }
 
 .issue-item:before,
 .suggestion-item:before,
 .recommendation-item:before {
-  content: "•";
+  content: "\2022";
   position: absolute;
   left: 0;
-  color: #667eea;
+  color: #1677ff;
   font-weight: bold;
 }
 
@@ -552,7 +455,7 @@ const testMockAnalysis = async () => {
 }
 
 .recommendations-card {
-  border-left: 4px solid #1890ff;
+  border-left: 4px solid #1677ff;
 }
 
 .recommendation-category {
@@ -566,51 +469,25 @@ const testMockAnalysis = async () => {
 .category-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1890ff;
+  color: #1677ff;
   margin-bottom: 12px;
 }
 
 .recommendation-link {
-  color: #1890ff;
+  color: #1677ff;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .recommendation-link:hover {
-  color: #40a9ff;
+  color: #4096ff;
   text-decoration: underline;
 }
 
 /* 返回按钮 */
 .back-section {
   text-align: center;
-  margin-top: 32px;
-}
-
-.back-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: rgba(0, 0, 0, 0.1);
-  color: #333;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.back-button:hover {
-  background: rgba(0, 0, 0, 0.15);
-  transform: translateY(-1px);
-}
-
-.back-icon {
-  width: 18px;
-  height: 18px;
+  margin-top: 24px;
 }
 
 /* 响应式设计 */
@@ -618,47 +495,33 @@ const testMockAnalysis = async () => {
   .test-analysis-container {
     padding: 16px;
   }
-  
-  .content-card {
-    padding: 24px;
-  }
-  
+
   .main-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .test-buttons-section {
     flex-direction: column;
     align-items: center;
   }
-  
-  .test-button {
-    width: 100%;
-    max-width: 300px;
-    justify-content: center;
-  }
-  
+
   .scores-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 480px) {
-  .content-card {
-    padding: 20px;
-  }
-  
   .main-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
-  
+
   .results-title {
     font-size: 1.5rem;
   }
 }
-</style> 
+</style>

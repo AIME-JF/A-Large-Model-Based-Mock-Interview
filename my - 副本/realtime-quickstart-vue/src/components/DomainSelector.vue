@@ -192,7 +192,6 @@ const selectDomain = async (domain) => {
     const data = await response.json();
     availableRoles.value = data.roles;
   } catch (error) {
-    console.error('获取岗位列表失败:', error);
     // 使用默认岗位列表
     availableRoles.value = getDefaultRoles(domain);
   }
@@ -207,7 +206,6 @@ const selectRole = async (role) => {
     const data = await response.json();
     previewQuestions.value = data.questions.slice(0, 3); // 只显示前3个问题
   } catch (error) {
-    console.error('获取面试问题失败:', error);
     // 使用默认问题
     previewQuestions.value = getDefaultQuestions(selectedDomain.value, role);
   }
@@ -308,7 +306,6 @@ onMounted(async () => {
     const data = await response.json();
     availableDomains.value = data.domains;
   } catch (error) {
-    console.error('获取领域列表失败:', error);
     // 使用默认领域列表
     availableDomains.value = ['人工智能', '大数据', '物联网'];
   }

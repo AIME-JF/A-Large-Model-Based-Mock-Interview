@@ -12,22 +12,37 @@ from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
 import websocket
 import time
+from concurrent.futures import ThreadPoolExecutor
+from threading import Lock
+from config import get_spark_config, require_spark_credentials
 
 class SparkAnalyzer:
     def __init__(self):
-        # 星火API配置
-        self.appid = "4a5e427a"
-        self.api_secret = "NDY4Zjk5ZmJlZjc3Y2I1NmMxYjgzZmFl"
-        self.api_key = "6979a54b0f455417bb35b155789aa56c"
-        self.domain = "x1"
-        self.Spark_url = "wss://spark-api.xf-yun.com/v1/x1"
-        
+        # 星火API配置从环境变量或本地 .env 读取，避免提交真实密钥。
+        spark_config = get_spark_config()
+        self.appid = spark_config["appid"]
+        self.api_secret = spark_config["api_secret"]
+        self.api_key = spark_config["api_key"]
+        self.domain = spark_config["domain"]
+        self.Spark_url = spark_config["spark_url"]
+
         # 分析结果存储
         self.analysis_result = ""
         self.analysis_complete = False
+
+        # 线程安全锁
+        self._lock = Lock()
+
+        # 线程池用于非阻塞WebSocket
+        self._executor = ThreadPoolExecutor(max_workers=2)
         
     def create_url(self):
         """生成星火API的WebSocket URL"""
+        require_spark_credentials({
+            "appid": self.appid,
+            "api_secret": self.api_secret,
+            "api_key": self.api_key,
+        })
         # 生成RFC1123格式的时间戳
         now = datetime.now()
         date = format_date_time(mktime(now.timetuple()))
@@ -66,43 +81,48 @@ class SparkAnalyzer:
         try:
             data = json.loads(message)
             code = data['header']['code']
-            
+
             if code != 0:
                 print(f'请求错误: {code}, {data}')
                 ws.close()
                 return
-            
+
             choices = data["payload"]["choices"]
             status = choices["status"]
             text = choices['text'][0]
-            
-            # 处理推理内容
-            if 'reasoning_content' in text and text['reasoning_content']:
-                reasoning_content = text["reasoning_content"]
-                self.analysis_result += reasoning_content
-            
-            # 处理回复内容
-            if 'content' in text and text['content']:
-                content = text["content"]
-                self.analysis_result += content
-            
-            # 检查是否完成
-            if status == 2:
-                self.analysis_complete = True
-                ws.close()
-                
+
+            with self._lock:
+                # 处理推理内容
+                if 'reasoning_content' in text and text['reasoning_content']:
+                    reasoning_content = text["reasoning_content"]
+                    self.analysis_result += reasoning_content
+
+                # 处理回复内容
+                if 'content' in text and text['content']:
+                    content = text["content"]
+                    self.analysis_result += content
+
+                # 检查是否完成
+                if status == 2:
+                    self.analysis_complete = True
+                    ws.close()
+
         except Exception as e:
             print(f"处理消息错误: {e}")
+            with self._lock:
+                self.analysis_complete = True
             ws.close()
-    
+
     def on_error(self, ws, error):
         """处理WebSocket错误"""
         print(f"WebSocket错误: {error}")
-        self.analysis_complete = True
-    
+        with self._lock:
+            self.analysis_complete = True
+
     def on_close(self, ws, close_status_code, close_msg):
         """处理WebSocket关闭"""
-        self.analysis_complete = True
+        with self._lock:
+            self.analysis_complete = True
     
     def on_open(self, ws):
         """处理WebSocket连接打开"""
@@ -212,13 +232,14 @@ class SparkAnalyzer:
     def analyze_interview(self, chat_history, domain, role):
         """分析面试记录"""
         try:
-            # 重置分析结果
-            self.analysis_result = ""
-            self.analysis_complete = False
-            
+            # 重置分析结果（线程安全）
+            with self._lock:
+                self.analysis_result = ""
+                self.analysis_complete = False
+
             # 创建分析提示词
             self.prompt = self.create_analysis_prompt(chat_history, domain, role)
-            
+
             # 创建WebSocket连接
             websocket.enableTrace(False)
             ws_url = self.create_url()
@@ -229,22 +250,29 @@ class SparkAnalyzer:
                 on_close=self.on_close,
                 on_open=self.on_open
             )
-            
-            # 启动WebSocket连接
-            ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
-            
-            # 等待分析完成
-            timeout = 30  # 30秒超时
+
+            # 在线程池中运行WebSocket，避免阻塞FastAPI事件循环
+            future = self._executor.submit(
+                ws.run_forever, sslopt={"cert_reqs": ssl.CERT_NONE}
+            )
+
+            # 等待分析完成（带30秒超时）
+            timeout = 30
             start_time = time.time()
-            while not self.analysis_complete and (time.time() - start_time) < timeout:
+            while (time.time() - start_time) < timeout:
+                with self._lock:
+                    if self.analysis_complete:
+                        break
                 time.sleep(0.1)
-            
-            if not self.analysis_complete:
-                raise Exception("分析超时")
-            
+
+            with self._lock:
+                if not self.analysis_complete:
+                    ws.close()
+                    raise Exception("分析超时")
+
             # 解析分析结果
             return self.parse_analysis_result()
-            
+
         except Exception as e:
             print(f"分析错误: {e}")
             # 返回默认分析结果

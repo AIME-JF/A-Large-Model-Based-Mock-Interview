@@ -130,9 +130,9 @@ class MultimodalAnalyzer:
         ideal_center_x = frame_width // 2
         ideal_center_y = frame_height // 2
         
-        # 计算偏离度
-        x_offset = abs(face_center_x - ideal_center_x) / ideal_center_x
-        y_offset = abs(face_center_y - ideal_center_y) / ideal_center_y
+        # 计算偏离度（防止除以零）
+        x_offset = abs(face_center_x - ideal_center_x) / max(ideal_center_x, 1)
+        y_offset = abs(face_center_y - ideal_center_y) / max(ideal_center_y, 1)
         
         # 面部大小分析（距离摄像头的远近）
         face_size_ratio = (w * h) / (frame_width * frame_height)
@@ -179,21 +179,29 @@ class MultimodalAnalyzer:
             # 语音速率分析
             speech_rate = self._analyze_speech_rate(audio_data, sample_rate)
             self.audio_analysis['speech_rate'] = speech_rate
-            
+
             # 语调自信度分析
             tone_confidence = self._analyze_tone_confidence(audio_data, sample_rate)
             self.audio_analysis['tone_confidence'] = tone_confidence
-            
+
             # 流畅度分析
             fluency_score = self._analyze_fluency(audio_data, sample_rate)
             self.audio_analysis['fluency_score'] = fluency_score
-            
+
             # 音量稳定性分析
             volume_stability = self._analyze_volume_stability(audio_data)
             self.audio_analysis['volume_stability'] = volume_stability
-            
+
         except Exception as e:
             print(f"音频分析错误: {e}")
+            # 返回默认分数而非静默失败
+            self.audio_analysis = {
+                'speech_rate': 50,
+                'tone_confidence': 50,
+                'fluency_score': 70,
+                'volume_stability': 70,
+                'pause_analysis': []
+            }
             
     def _analyze_speech_rate(self, audio_data, sample_rate):
         """分析语音速率"""
@@ -268,15 +276,16 @@ class MultimodalAnalyzer:
         try:
             # 计算音量包络
             envelope = np.abs(audio_data)
-            
+
             # 计算音量变化的标准差
             volume_std = np.std(envelope)
             volume_mean = np.mean(envelope)
-            
+
             # 稳定性评分（变化越小，分数越高）
-            stability_score = 100 - (volume_std / volume_mean) * 100
+            # 使用 max() 防止除以零
+            stability_score = 100 - (volume_std / max(volume_mean, 1e-6)) * 100
             return max(0, min(100, stability_score))
-            
+
         except Exception as e:
             print(f"音量稳定性分析错误: {e}")
             return 70
@@ -306,6 +315,14 @@ class MultimodalAnalyzer:
             
         except Exception as e:
             print(f"文本分析错误: {e}")
+            # 返回默认分数而非静默失败
+            self.text_analysis = {
+                'relevance_score': 50,
+                'structure_score': 50,
+                'completeness_score': 50,
+                'keyword_density': 50,
+                'star_structure_usage': 50
+            }
             
     def _analyze_relevance(self, text, domain, role):
         """分析回答相关性"""

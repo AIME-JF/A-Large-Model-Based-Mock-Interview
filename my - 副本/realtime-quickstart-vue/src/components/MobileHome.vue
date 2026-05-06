@@ -20,126 +20,126 @@
 
     <!-- 快速操作卡片 -->
     <div class="quick-actions">
-      <h2 class="section-title">🚀 快速开始</h2>
+      <h2 class="section-title"><RocketOutlined class="section-icon" /> 快速开始</h2>
       <div class="action-cards">
-        <div class="action-card tech-card" @click="handleStartInterview('tech', '前端工程师')">
-          <div class="card-icon">💻</div>
+        <a-card class="action-card tech-card" hoverable @click="handleStartInterview('tech', '前端工程师')">
+          <div class="card-icon"><LaptopOutlined /></div>
           <div class="card-title">技术面试</div>
           <div class="card-desc">算法、编程、技术问答</div>
-        </div>
-        
-        <div class="action-card hr-card" @click="handleStartInterview('hr', 'HR面试')">
-          <div class="card-icon">👥</div>
+        </a-card>
+
+        <a-card class="action-card hr-card" hoverable @click="handleStartInterview('hr', 'HR面试')">
+          <div class="card-icon"><TeamOutlined /></div>
           <div class="card-title">HR面试</div>
           <div class="card-desc">行为面试、软技能评估</div>
-        </div>
+        </a-card>
       </div>
     </div>
 
     <!-- 面试领域选择 -->
     <div class="interview-domains">
-      <h2 class="section-title">🎯 选择面试领域</h2>
-      <div class="domains-list">
-        <div 
-          v-for="domain in mockInterviewDomains" 
-          :key="domain.id" 
+      <h2 class="section-title"><AimOutlined class="section-icon" /> 选择面试领域</h2>
+      <a-card class="domains-card">
+        <div
+          v-for="domain in mockInterviewDomains"
+          :key="domain.id"
           class="domain-item"
           @click="toggleDomain(domain.id)"
         >
           <div class="domain-header">
-            <span class="domain-icon">{{ getDomainIcon(domain.id) }}</span>
+            <span class="domain-icon"><component :is="getDomainIconComponent(domain.id)" /></span>
             <span class="domain-name">{{ domain.name }}</span>
-            <span class="expand-icon" :class="{ 'expanded': expandedDomain === domain.id }">▼</span>
+            <DownOutlined class="expand-icon" :class="{ 'expanded': expandedDomain === domain.id }" />
           </div>
-          
+
           <div class="roles-container" v-show="expandedDomain === domain.id">
             <div class="roles-grid">
-              <button
+              <a-button
                 v-for="role in domain.roles"
                 :key="role"
                 @click.stop="handleStartInterview(domain.id, role)"
                 class="role-btn"
               >
                 {{ role }}
-              </button>
+              </a-button>
             </div>
           </div>
         </div>
-      </div>
+      </a-card>
     </div>
 
     <!-- 功能工具 -->
     <div class="feature-tools">
-      <h2 class="section-title">🛠️ 实用工具</h2>
+      <h2 class="section-title"><ToolOutlined class="section-icon" /> 实用工具</h2>
       <div class="tools-grid">
-        <div class="tool-card" @click="$emit('navigate-to-page', 'interview-records')">
-          <div class="tool-icon">📊</div>
+        <a-card class="tool-card" hoverable @click="$emit('navigate-to-page', 'interview-records')">
+          <div class="tool-icon"><BarChartOutlined /></div>
           <div class="tool-title">面试记录</div>
-        </div>
-        
-        <div class="tool-card" @click="$emit('navigate-to-page', 'ability-analysis')">
-          <div class="tool-icon">📈</div>
+        </a-card>
+
+        <a-card class="tool-card" hoverable @click="$emit('navigate-to-page', 'ability-analysis')">
+          <div class="tool-icon"><LineChartOutlined /></div>
           <div class="tool-title">能力分析</div>
-        </div>
-        
-        <div class="tool-card" @click="$emit('test-analysis')">
-          <div class="tool-icon">🔧</div>
+        </a-card>
+
+        <a-card class="tool-card" hoverable @click="$emit('test-analysis')">
+          <div class="tool-icon"><ExperimentOutlined /></div>
           <div class="tool-title">分析测试</div>
-        </div>
-        
-        <div class="tool-card" @click="$emit('camera-test')">
-          <div class="tool-icon">📷</div>
+        </a-card>
+
+        <a-card class="tool-card" hoverable @click="$emit('camera-test')">
+          <div class="tool-icon"><CameraOutlined /></div>
           <div class="tool-title">摄像头测试</div>
-        </div>
-        
-        <div class="tool-card" @click="$emit('conversation-test')">
-          <div class="tool-icon">💬</div>
+        </a-card>
+
+        <a-card class="tool-card" hoverable @click="$emit('conversation-test')">
+          <div class="tool-icon"><MessageOutlined /></div>
           <div class="tool-title">对话测试</div>
-        </div>
-        
-        <div class="tool-card resume-tool" @click="showResumeUpload = true">
-          <div class="tool-icon">📄</div>
+        </a-card>
+
+        <a-card class="tool-card resume-tool" hoverable @click="showResumeUpload = true">
+          <div class="tool-icon"><FileTextOutlined /></div>
           <div class="tool-title">简历分析</div>
-        </div>
+        </a-card>
       </div>
     </div>
 
     <!-- 最近活动 -->
     <div class="recent-activity">
-      <h2 class="section-title">⏰ 最近活动</h2>
-      <div class="activity-list">
-        <div 
-          v-for="activity in paginatedActivities" 
-          :key="activity.id" 
+      <h2 class="section-title"><ClockCircleOutlined class="section-icon" /> 最近活动</h2>
+      <a-card class="activity-card">
+        <div
+          v-for="activity in paginatedActivities"
+          :key="activity.id"
           class="activity-item"
         >
-          <span class="activity-icon">{{ activity.icon }}</span>
+          <span class="activity-icon"><component :is="activityIconMap[activity.icon]" v-if="activityIconMap[activity.icon]" /><span v-else>{{ activity.icon }}</span></span>
           <div class="activity-content">
             <div class="activity-text">{{ activity.text }}</div>
             <div class="activity-time">{{ activity.time }}</div>
           </div>
         </div>
-      </div>
-      
+      </a-card>
+
       <!-- 简化的分页 -->
       <div v-if="activities.length > activitiesPageSize" class="pagination-simple">
-        <button 
+        <a-button
           @click="handleActivitiesPageChange(activitiesCurrentPage - 1)"
           :disabled="activitiesCurrentPage === 1"
-          class="page-btn"
+          size="small"
         >
-          ‹ 上一页
-        </button>
+          <LeftOutlined /> 上一页
+        </a-button>
         <span class="page-info">
           {{ activitiesCurrentPage }} / {{ Math.ceil(activities.length / activitiesPageSize) }}
         </span>
-        <button 
+        <a-button
           @click="handleActivitiesPageChange(activitiesCurrentPage + 1)"
           :disabled="activitiesCurrentPage >= Math.ceil(activities.length / activitiesPageSize)"
-          class="page-btn"
+          size="small"
         >
-          下一页 ›
-        </button>
+          下一页 <RightOutlined />
+        </a-button>
       </div>
     </div>
 
@@ -148,34 +148,38 @@
       <div class="modal-overlay" @click="showResumeUpload = false"></div>
       <div class="modal-content">
         <div class="modal-header">
-          <h3>📄 简历智能分析</h3>
-          <button class="close-btn" @click="showResumeUpload = false">✕</button>
+          <h3><FileTextOutlined /> 简历智能分析</h3>
+          <a-button type="text" shape="circle" @click="showResumeUpload = false">
+            <template #icon><CloseOutlined /></template>
+          </a-button>
         </div>
-        
+
         <div class="upload-area" @click="triggerFileUpload" @dragover.prevent @drop.prevent="handleFileDrop">
           <div v-if="!uploadedResume" class="upload-placeholder">
-            <div class="upload-icon">📁</div>
+            <div class="upload-icon"><InboxOutlined /></div>
             <div class="upload-text">点击或拖拽上传简历</div>
             <div class="upload-hint">支持 PDF、DOC、DOCX 格式</div>
           </div>
           <div v-else class="uploaded-file">
-            <div class="file-icon">📄</div>
+            <div class="file-icon"><FileTextOutlined /></div>
             <div class="file-info">
               <div class="file-name">{{ uploadedResume.name }}</div>
               <div class="file-size">{{ formatFileSize(uploadedResume.size) }}</div>
             </div>
-            <button class="remove-file" @click.stop="removeFile">✕</button>
+            <a-button type="text" danger shape="circle" size="small" @click.stop="removeFile">
+              <template #icon><DeleteOutlined /></template>
+            </a-button>
           </div>
         </div>
-        
+
         <input ref="fileInput" type="file" accept=".pdf,.doc,.docx" @change="handleFileUpload" style="display: none;">
-        
+
         <div class="modal-actions">
-          <button v-if="uploadedResume && !isAnalyzing" class="analyze-btn" @click="analyzeResume">
+          <a-button v-if="uploadedResume && !isAnalyzing" type="primary" block size="large" @click="analyzeResume">
             开始分析简历
-          </button>
+          </a-button>
           <div v-if="isAnalyzing" class="analyzing-status">
-            <div class="spinner"></div>
+            <a-spin size="small" />
             <span>正在分析简历...</span>
           </div>
         </div>
@@ -187,6 +191,45 @@
 <script setup>
 import { ref, computed, defineProps, defineEmits } from 'vue';
 import { message } from 'ant-design-vue';
+import {
+  RocketOutlined,
+  LaptopOutlined,
+  TeamOutlined,
+  AimOutlined,
+  DownOutlined,
+  ToolOutlined,
+  BarChartOutlined,
+  LineChartOutlined,
+  ExperimentOutlined,
+  CameraOutlined,
+  MessageOutlined,
+  FileTextOutlined,
+  ClockCircleOutlined,
+  LeftOutlined,
+  RightOutlined,
+  CloseOutlined,
+  InboxOutlined,
+  DeleteOutlined,
+  MobileOutlined,
+  HighlightOutlined,
+  RiseOutlined,
+  DollarOutlined,
+  AppstoreOutlined,
+  TrophyOutlined,
+  BulbOutlined,
+  SearchOutlined,
+} from '@ant-design/icons-vue';
+
+const activityIconMap = {
+  LaptopOutlined,
+  BarChartOutlined,
+  AimOutlined,
+  RiseOutlined,
+  TrophyOutlined,
+  FileTextOutlined,
+  BulbOutlined,
+  SearchOutlined,
+};
 import { mockInterviewDomains } from '../utils/mockData';
 
 const props = defineProps({
@@ -215,16 +258,16 @@ const paginatedActivities = computed(() => {
 });
 
 // 方法
-const getDomainIcon = (domainId) => {
+const getDomainIconComponent = (domainId) => {
   const icons = {
-    'tech': '💻',
-    'product': '📱',
-    'design': '🎨',
-    'marketing': '📈',
-    'hr': '👥',
-    'finance': '💰'
+    'tech': LaptopOutlined,
+    'product': MobileOutlined,
+    'design': HighlightOutlined,
+    'marketing': RiseOutlined,
+    'hr': TeamOutlined,
+    'finance': DollarOutlined
   };
-  return icons[domainId] || '💼';
+  return icons[domainId] || AppstoreOutlined;
 };
 
 const toggleDomain = (domainId) => {
@@ -289,25 +332,25 @@ const analyzeResume = async () => {
 <style scoped>
 .mobile-home {
   padding: 80px 16px 20px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: #f5f5f5;
   min-height: 100vh;
 }
 
 /* 移动端欢迎区域 */
 .mobile-welcome {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
+  background: #1677ff;
+  border-radius: 12px;
   padding: 24px;
   margin-bottom: 24px;
   color: white;
   text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .welcome-title {
   font-size: 2rem;
   font-weight: 700;
   margin: 0 0 8px 0;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .welcome-subtitle {
@@ -342,14 +385,22 @@ const analyzeResume = async () => {
 .section-title {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #2d3748;
+  color: #1a1a1a;
   margin: 0 0 16px 0;
   padding-left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-icon {
+  color: #1677ff;
+  font-size: 1.1rem;
 }
 
 /* 快速操作卡片 */
 .quick-actions {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .action-cards {
@@ -359,13 +410,13 @@ const analyzeResume = async () => {
 }
 
 .action-card {
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.action-card:deep(.ant-card-body) {
+  padding: 20px;
 }
 
 .action-card:active {
@@ -373,12 +424,24 @@ const analyzeResume = async () => {
 }
 
 .tech-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #1677ff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+}
+
+.tech-card:deep(.ant-card-body) {
   color: white;
 }
 
 .hr-card {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: #722ed1;
+  color: white;
+  border: none;
+  border-radius: 12px;
+}
+
+.hr-card:deep(.ant-card-body) {
   color: white;
 }
 
@@ -400,18 +463,20 @@ const analyzeResume = async () => {
 
 /* 面试领域 */
 .interview-domains {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
-.domains-list {
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.domains-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.domains-card:deep(.ant-card-body) {
+  padding: 0;
 }
 
 .domain-item {
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .domain-item:last-child {
@@ -427,23 +492,25 @@ const analyzeResume = async () => {
 }
 
 .domain-header:hover {
-  background: #f8fafc;
+  background: #fafafa;
 }
 
 .domain-icon {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   margin-right: 12px;
+  color: #1677ff;
 }
 
 .domain-name {
   flex: 1;
   font-weight: 500;
-  color: #2d3748;
+  color: #1a1a1a;
 }
 
 .expand-icon {
   transition: transform 0.3s ease;
-  color: #64748b;
+  color: #999;
+  font-size: 12px;
 }
 
 .expand-icon.expanded {
@@ -461,25 +528,19 @@ const analyzeResume = async () => {
 }
 
 .role-btn {
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  padding: 12px;
   font-size: 0.9rem;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  color: #666;
 }
 
 .role-btn:hover {
-  background: #667eea;
-  color: white;
-  border-color: #667eea;
+  color: #1677ff;
+  border-color: #1677ff;
 }
 
 /* 功能工具 */
 .feature-tools {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .tools-grid {
@@ -489,13 +550,15 @@ const analyzeResume = async () => {
 }
 
 .tool-card {
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.tool-card:deep(.ant-card-body) {
+  padding: 20px;
 }
 
 .tool-card:active {
@@ -505,35 +568,38 @@ const analyzeResume = async () => {
 .tool-icon {
   font-size: 2rem;
   margin-bottom: 8px;
+  color: #1677ff;
 }
 
 .tool-title {
   font-size: 1rem;
   font-weight: 500;
-  color: #2d3748;
+  color: #1a1a1a;
 }
 
 .resume-tool {
-  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  background: #f0f5ff;
 }
 
 /* 最近活动 */
 .recent-activity {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
-.activity-list {
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.activity-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.activity-card:deep(.ant-card-body) {
+  padding: 0;
 }
 
 .activity-item {
   display: flex;
   align-items: center;
   padding: 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .activity-item:last-child {
@@ -551,13 +617,13 @@ const analyzeResume = async () => {
 
 .activity-text {
   font-size: 0.95rem;
-  color: #2d3748;
+  color: #1a1a1a;
   margin-bottom: 4px;
 }
 
 .activity-time {
   font-size: 0.8rem;
-  color: #64748b;
+  color: #999;
 }
 
 /* 简化分页 */
@@ -567,35 +633,11 @@ const analyzeResume = async () => {
   justify-content: center;
   gap: 16px;
   padding: 16px;
-  background: white;
-  border-radius: 0 0 16px 16px;
-}
-
-.page-btn {
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 0.9rem;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.page-btn:hover:not(:disabled) {
-  background: #667eea;
-  color: white;
-  border-color: #667eea;
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .page-info {
   font-size: 0.9rem;
-  color: #64748b;
+  color: #666;
 }
 
 /* 简历上传弹窗 */
@@ -623,12 +665,13 @@ const analyzeResume = async () => {
 
 .modal-content {
   position: relative;
-  background: white;
-  border-radius: 20px;
+  background: #ffffff;
+  border-radius: 12px;
   width: 100%;
   max-width: 400px;
   max-height: 80vh;
   overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .modal-header {
@@ -636,32 +679,21 @@ const analyzeResume = async () => {
   align-items: center;
   justify-content: space-between;
   padding: 20px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .modal-header h3 {
   margin: 0;
   font-size: 1.2rem;
-  color: #2d3748;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #64748b;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  color: #1a1a1a;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
 }
 
 .upload-area {
   margin: 20px;
-  border: 2px dashed #e2e8f0;
+  border: 2px dashed #d9d9d9;
   border-radius: 12px;
   padding: 24px;
   text-align: center;
@@ -670,8 +702,8 @@ const analyzeResume = async () => {
 }
 
 .upload-area:hover {
-  border-color: #667eea;
-  background: #f8fafc;
+  border-color: #1677ff;
+  background: #f0f5ff;
 }
 
 .upload-placeholder {
@@ -683,31 +715,32 @@ const analyzeResume = async () => {
 
 .upload-icon {
   font-size: 3rem;
-  color: #64748b;
+  color: #1677ff;
 }
 
 .upload-text {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #2d3748;
+  color: #1a1a1a;
 }
 
 .upload-hint {
   font-size: 0.9rem;
-  color: #64748b;
+  color: #999;
 }
 
 .uploaded-file {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #f8fafc;
+  background: #fafafa;
   padding: 12px;
   border-radius: 8px;
 }
 
 .file-icon {
   font-size: 2rem;
+  color: #1677ff;
 }
 
 .file-info {
@@ -717,48 +750,17 @@ const analyzeResume = async () => {
 
 .file-name {
   font-weight: 600;
-  color: #2d3748;
+  color: #1a1a1a;
   margin-bottom: 4px;
 }
 
 .file-size {
   font-size: 0.9rem;
-  color: #64748b;
-}
-
-.remove-file {
-  background: #fee2e2;
-  border: none;
-  color: #dc2626;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #999;
 }
 
 .modal-actions {
   padding: 20px;
-}
-
-.analyze-btn {
-  width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  border-radius: 12px;
-  padding: 16px;
-  color: white;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.analyze-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
 }
 
 .analyzing-status {
@@ -767,23 +769,9 @@ const analyzeResume = async () => {
   justify-content: center;
   gap: 12px;
   padding: 16px;
-  background: #f8fafc;
+  background: #fafafa;
   border-radius: 12px;
-  color: #64748b;
-}
-
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #e2e8f0;
-  border-top: 2px solid #667eea;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  color: #666;
 }
 
 /* 响应式调整 */
@@ -791,15 +779,15 @@ const analyzeResume = async () => {
   .action-cards {
     grid-template-columns: 1fr;
   }
-  
+
   .tools-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .roles-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .welcome-stats {
     gap: 20px;
   }

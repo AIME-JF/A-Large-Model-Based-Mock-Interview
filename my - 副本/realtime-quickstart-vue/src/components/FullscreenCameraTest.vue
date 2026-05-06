@@ -2,80 +2,84 @@
   <FullscreenCamera ref="cameraRef">
     <!-- 测试控制面板 -->
     <div class="test-controls">
-      <div class="control-panel">
-        <h1 class="test-title">全屏摄像头测试</h1>
+      <a-card class="control-panel" size="small">
+        <h1 class="test-title">
+          <VideoCameraOutlined />
+          全屏摄像头测试
+        </h1>
         <p class="test-subtitle">测试微信风格的全屏摄像头背景</p>
-        
+
         <div class="control-buttons">
-          <button 
+          <a-button
+            type="primary"
+            block
             @click="enableCamera"
-            class="test-btn enable-btn"
+            style="background: #52c41a; border-color: #52c41a;"
           >
+            <template #icon><PlayCircleOutlined /></template>
             开启摄像头
-          </button>
-          <button 
+          </a-button>
+          <a-button
+            danger
+            block
             @click="disableCamera"
-            class="test-btn disable-btn"
           >
+            <template #icon><PauseCircleOutlined /></template>
             关闭摄像头
-          </button>
-          <button 
+          </a-button>
+          <a-button
+            type="primary"
+            block
             @click="toggleCamera"
-            class="test-btn toggle-btn"
           >
+            <template #icon><SwapOutlined /></template>
             切换摄像头
-          </button>
+          </a-button>
         </div>
-        
+
         <div class="status-info">
           <div class="status-item">
             <span class="status-label">摄像头状态:</span>
-            <span class="status-value" :class="{ 'active': isCameraEnabled }">
+            <a-tag :color="isCameraEnabled ? 'success' : 'default'" size="small">
               {{ isCameraEnabled ? '已开启' : '已关闭' }}
-            </span>
+            </a-tag>
           </div>
           <div class="status-item">
             <span class="status-label">浏览器支持:</span>
-            <span class="status-value" :class="{ 'active': browserSupport }">
+            <a-tag :color="browserSupport ? 'success' : 'error'" size="small">
               {{ browserSupport ? '支持' : '不支持' }}
-            </span>
+            </a-tag>
           </div>
           <div class="status-item">
             <span class="status-label">权限状态:</span>
-            <span class="status-value">{{ permissionStatus }}</span>
+            <a-tag color="processing" size="small">{{ permissionStatus }}</a-tag>
           </div>
         </div>
-      </div>
+      </a-card>
     </div>
-    
-    <!-- 功能说明
-    <div class="feature-info">
-      <div class="info-panel">
-        <h3>功能特性</h3>
-        <ul class="feature-list">
-          <li>✅ 全屏摄像头背景，类似微信聊天</li>
-          <li>✅ 右上角AI面试官头像</li>
-          <li>✅ 右下角摄像头控制按钮</li>
-          <li>✅ 毛玻璃效果控制面板</li>
-          <li>✅ 响应式设计，支持移动端</li>
-          <li>✅ 完善的错误处理和状态反馈</li>
-        </ul>
-      </div>
-    </div> -->
-    
+
     <!-- 返回按钮 -->
-    <button
+    <a-button
       @click="$emit('go-back')"
       class="back-button"
+      shape="round"
     >
-      ← 返回
-    </button>
+      <template #icon><ArrowLeftOutlined /></template>
+      返回
+    </a-button>
   </FullscreenCamera>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import FullscreenCamera from './FullscreenCamera.vue';
+import {
+  VideoCameraOutlined,
+  PlayCircleOutlined,
+  PauseCircleOutlined,
+  SwapOutlined,
+  ArrowLeftOutlined
+} from '@ant-design/icons-vue';
 
 const emits = defineEmits(['go-back']);
 
@@ -96,7 +100,7 @@ const checkPermissionStatus = async () => {
       permissionStatus.value = '浏览器不支持';
       return;
     }
-    
+
     const result = await navigator.permissions.query({ name: 'camera' });
     permissionStatus.value = result.state;
   } catch (error) {
@@ -150,20 +154,26 @@ onMounted(() => {
 }
 
 .control-panel {
-  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .test-title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
-  color: #333;
+  color: #1a1a1a;
   margin: 0 0 8px 0;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.test-title :deep(.anticon) {
+  color: #1677ff;
 }
 
 .test-subtitle {
@@ -180,42 +190,8 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-.test-btn {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.test-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.enable-btn {
-  background: rgba(82, 196, 26, 0.9);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.disable-btn {
-  background: rgba(255, 77, 79, 0.9);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.toggle-btn {
-  background: rgba(24, 144, 255, 0.9);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
 .status-info {
-  background: rgba(0, 0, 0, 0.05);
+  background: #f5f5f5;
   border-radius: 8px;
   padding: 12px;
 }
@@ -237,82 +213,21 @@ onMounted(() => {
   font-weight: 500;
 }
 
-.status-value {
-  font-size: 12px;
-  color: #999;
-  font-weight: 600;
-}
-
-.status-value.active {
-  color: #52c41a;
-}
-
-/* 功能说明样式 */
-.feature-info {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 10;
-  max-width: 300px;
-}
-
-.info-panel {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.info-panel h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 12px 0;
-  text-align: center;
-}
-
-.feature-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.feature-list li {
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 6px;
-  padding-left: 0;
-}
-
-.feature-list li:last-child {
-  margin-bottom: 0;
-}
-
 /* 返回按钮样式 */
 .back-button {
   position: absolute;
   bottom: 20px;
   left: 20px;
   z-index: 10;
-  padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 25px;
-  color: #666;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   font-size: 14px;
 }
 
 .back-button:hover {
   background: rgba(255, 255, 255, 1);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
 /* 响应式设计 */
@@ -323,31 +238,15 @@ onMounted(() => {
     right: 10px;
     max-width: none;
   }
-  
-  .control-panel {
-    padding: 16px;
-  }
-  
+
   .test-title {
     font-size: 20px;
   }
-  
-  .feature-info {
-    top: 10px;
-    right: 10px;
-    left: 10px;
-    max-width: none;
-  }
-  
-  .info-panel {
-    padding: 12px;
-  }
-  
+
   .back-button {
     bottom: 10px;
     left: 10px;
-    padding: 10px 16px;
     font-size: 12px;
   }
 }
-</style> 
+</style>

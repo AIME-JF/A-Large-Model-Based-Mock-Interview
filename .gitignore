@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 package-lock.json
+.cache/
 
 # Python
 __pycache__/
@@ -28,7 +29,9 @@ desktop.ini
 # Environment
 .env
 .env.local
+.env.*
 .env.*.local
+*.local.json
 
 # Logs
 *.log
@@ -37,5 +40,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # Agent/AI tools
+.claude/
 .gemini/
 .agent/

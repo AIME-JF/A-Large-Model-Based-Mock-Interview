@@ -19,18 +19,18 @@
       <div class="expression-controls">
         <h4>表情控制</h4>
         <div class="expression-buttons">
-          <button @click="setExpression('neutral')" class="expression-btn" :class="{ active: currentExpression === 'neutral' }">
-            😐 中性
-          </button>
-          <button @click="setExpression('smile')" class="expression-btn" :class="{ active: currentExpression === 'smile' }">
-            😊 微笑
-          </button>
-          <button @click="setExpression('thinking')" class="expression-btn" :class="{ active: currentExpression === 'thinking' }">
-            🤔 思考
-          </button>
-          <button @click="setExpression('serious')" class="expression-btn" :class="{ active: currentExpression === 'serious' }">
-            😤 严肃
-          </button>
+          <a-button @click="setExpression('neutral')" class="expression-btn" :class="{ active: currentExpression === 'neutral' }">
+            <MinusCircleOutlined /> 中性
+          </a-button>
+          <a-button @click="setExpression('smile')" class="expression-btn" :class="{ active: currentExpression === 'smile' }">
+            <SmileOutlined /> 微笑
+          </a-button>
+          <a-button @click="setExpression('thinking')" class="expression-btn" :class="{ active: currentExpression === 'thinking' }">
+            <QuestionCircleOutlined /> 思考
+          </a-button>
+          <a-button @click="setExpression('serious')" class="expression-btn" :class="{ active: currentExpression === 'serious' }">
+            <FrownOutlined /> 严肃
+          </a-button>
         </div>
       </div>
       
@@ -38,10 +38,10 @@
       <div class="gesture-controls">
         <h4>手势控制</h4>
         <div class="gesture-buttons">
-          <button @click="playGesture('wave')" class="gesture-btn">👋 挥手</button>
-          <button @click="playGesture('nod')" class="gesture-btn">👍 点头</button>
-          <button @click="playGesture('point')" class="gesture-btn">👉 指向</button>
-          <button @click="playGesture('clap')" class="gesture-btn">👏 鼓掌</button>
+          <a-button @click="playGesture('wave')" class="gesture-btn">你好 挥手</a-button>
+          <a-button @click="playGesture('nod')" class="gesture-btn"><LikeOutlined /> 点头</a-button>
+          <a-button @click="playGesture('point')" class="gesture-btn"><RightOutlined /> 指向</a-button>
+          <a-button @click="playGesture('clap')" class="gesture-btn"><StarOutlined /> 鼓掌</a-button>
         </div>
       </div>
       
@@ -70,6 +70,15 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
+import {
+  MinusCircleOutlined,
+  SmileOutlined,
+  QuestionCircleOutlined,
+  FrownOutlined,
+  LikeOutlined,
+  RightOutlined,
+  StarOutlined
+} from '@ant-design/icons-vue'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
@@ -590,10 +599,10 @@ onUnmounted(() => {
 .virtual-interviewer-container {
   display: flex;
   height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16px;
+  background: linear-gradient(135deg, #1677ff 0%, #722ed1 100%);
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .three-canvas-container {
@@ -619,7 +628,7 @@ onUnmounted(() => {
 .interviewer-name {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: #1a1a1a;
   margin: 0 0 12px 0;
 }
 
@@ -655,7 +664,7 @@ onUnmounted(() => {
 
 .status-text {
   font-size: 0.9rem;
-  color: #7f8c8d;
+  color: #666;
   font-weight: 500;
 }
 
@@ -670,7 +679,7 @@ onUnmounted(() => {
 .interviewer-settings h4 {
   font-size: 1rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: #1a1a1a;
   margin: 0 0 12px 0;
 }
 
@@ -684,26 +693,32 @@ onUnmounted(() => {
 .expression-btn,
 .gesture-btn {
   padding: 8px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #d9d9d9;
   border-radius: 8px;
-  background: white;
+  background: #fff;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: auto;
 }
 
 .expression-btn:hover,
 .gesture-btn:hover {
-  background: #f8f9fa;
-  border-color: #667eea;
+  background: #f5f5f5;
+  border-color: #1677ff;
+  color: #1677ff;
   transform: translateY(-1px);
 }
 
 .expression-btn.active {
-  background: #667eea;
-  color: white;
-  border-color: #667eea;
+  background: #1677ff;
+  color: #fff;
+  border-color: #1677ff;
 }
 
 .setting-item {
@@ -715,7 +730,7 @@ onUnmounted(() => {
 
 .setting-item label {
   font-size: 0.9rem;
-  color: #2c3e50;
+  color: #1a1a1a;
   font-weight: 500;
 }
 

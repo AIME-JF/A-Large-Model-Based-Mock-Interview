@@ -4,10 +4,10 @@
     <div class="page-header">
       <div class="header-left">
         <button class="back-btn" @click="$emit('go-back')">
-          <span class="back-icon">←</span>
+          <ArrowLeftOutlined class="back-icon" />
           返回首页
         </button>
-        <h1 class="page-title">📈 能力分析</h1>
+        <h1 class="page-title"><LineChartOutlined class="title-icon" /> 能力分析</h1>
         <div class="breadcrumb">首页 / 能力分析</div>
       </div>
       <div class="header-right">
@@ -21,7 +21,7 @@
     <!-- 综合能力概览 -->
     <div class="overview-section">
       <div class="overview-card">
-        <h2 class="section-title">🎯 综合能力评估</h2>
+        <h2 class="section-title"><AimOutlined class="section-icon" /> 综合能力评估</h2>
         <div class="overall-score">
           <div class="score-circle">
             <div class="score-inner">
@@ -38,7 +38,7 @@
       
       <div class="quick-stats">
         <div class="stat-card">
-          <div class="stat-icon">🏆</div>
+          <div class="stat-icon"><TrophyOutlined /></div>
           <div class="stat-content">
             <div class="stat-number">{{ strongestSkill.score }}%</div>
             <div class="stat-label">最强技能</div>
@@ -47,7 +47,7 @@
         </div>
         
         <div class="stat-card">
-          <div class="stat-icon">📈</div>
+          <div class="stat-icon"><LineChartOutlined /></div>
           <div class="stat-content">
             <div class="stat-number">+{{ improvementRate }}%</div>
             <div class="stat-label">近期提升</div>
@@ -56,7 +56,7 @@
         </div>
         
         <div class="stat-card">
-          <div class="stat-icon">🎯</div>
+          <div class="stat-icon"><AimOutlined /></div>
           <div class="stat-content">
             <div class="stat-number">{{ completedGoals }}/{{ totalGoals }}</div>
             <div class="stat-label">目标完成</div>
@@ -69,7 +69,7 @@
     <!-- 技能雷达图 -->
     <div class="radar-section">
       <div class="card">
-        <h2 class="section-title">🕸️ 技能雷达图</h2>
+        <h2 class="section-title"><RadarChartOutlined class="section-icon" /> 技能雷达图</h2>
         <div class="radar-container">
           <div class="radar-chart" ref="radarChart">
             <!-- 雷达图背景网格 -->
@@ -93,8 +93,8 @@
               <!-- 数据多边形 -->
               <polygon 
                 :points="radarPoints" 
-                fill="rgba(59, 130, 246, 0.2)" 
-                stroke="#3b82f6" 
+                fill="rgba(22, 119, 255, 0.2)" 
+                stroke="#1677ff" 
                 stroke-width="2"
               />
               
@@ -105,7 +105,7 @@
                 :cx="point.x" 
                 :cy="point.y" 
                 r="4" 
-                fill="#3b82f6"
+                fill="#1677ff"
               />
             </svg>
           </div>
@@ -128,7 +128,7 @@
     <!-- 详细技能分析 -->
     <div class="skills-section">
       <div class="card">
-        <h2 class="section-title">💪 技能详细分析</h2>
+        <h2 class="section-title"><ThunderboltOutlined class="section-icon" /> 技能详细分析</h2>
         <div class="skills-grid">
           <div 
             v-for="skill in skillsData" 
@@ -158,7 +158,7 @@
               <div class="skill-trend">
                 <span class="trend-label">趋势：</span>
                 <span class="trend-value" :class="skill.trend > 0 ? 'trend-up' : 'trend-down'">
-                  {{ skill.trend > 0 ? '↗' : '↘' }} {{ Math.abs(skill.trend) }}%
+                  <RiseOutlined v-if="skill.trend > 0" /><FallOutlined v-else /> {{ Math.abs(skill.trend) }}%
                 </span>
               </div>
               <div class="skill-level">
@@ -183,7 +183,7 @@
     <!-- 学习路径推荐 -->
     <div class="learning-section">
       <div class="card">
-        <h2 class="section-title">🎓 个性化学习路径</h2>
+        <h2 class="section-title"><ReadOutlined class="section-icon" /> 个性化学习路径</h2>
         <div class="learning-paths">
           <div 
             v-for="path in learningPaths" 
@@ -191,7 +191,7 @@
             class="learning-path"
           >
             <div class="path-header">
-              <div class="path-icon">{{ path.icon }}</div>
+              <div class="path-icon"><component :is="path.icon" /></div>
               <div class="path-info">
                 <h3 class="path-title">{{ path.title }}</h3>
                 <div class="path-description">{{ path.description }}</div>
@@ -234,6 +234,20 @@
 
 <script setup>
 import { ref, computed, defineEmits } from 'vue';
+import {
+  LineChartOutlined,
+  AimOutlined,
+  TrophyOutlined,
+  RadarChartOutlined,
+  ThunderboltOutlined,
+  ReadOutlined,
+  RocketOutlined,
+  MessageOutlined,
+  BulbOutlined,
+  ArrowLeftOutlined,
+  RiseOutlined,
+  FallOutlined
+} from '@ant-design/icons-vue';
 
 defineEmits(['go-back']);
 
@@ -294,7 +308,7 @@ const skillsData = ref([
 const learningPaths = ref([
   {
     id: 1,
-    icon: '🚀',
+    icon: RocketOutlined,
     title: '前端技术进阶',
     description: '提升前端开发技能，掌握最新技术栈',
     priority: 'high',
@@ -307,7 +321,7 @@ const learningPaths = ref([
   },
   {
     id: 2,
-    icon: '💬',
+    icon: MessageOutlined,
     title: '沟通技巧提升',
     description: '改善沟通表达能力，提高团队协作效率',
     priority: 'medium',
@@ -319,7 +333,7 @@ const learningPaths = ref([
   },
   {
     id: 3,
-    icon: '🧠',
+    icon: BulbOutlined,
     title: '算法思维强化',
     description: '提升逻辑思维和问题解决能力',
     priority: 'medium',
@@ -331,7 +345,7 @@ const learningPaths = ref([
   },
   {
     id: 4,
-    icon: '🎯',
+    icon: AimOutlined,
     title: '压力管理训练',
     description: '提高抗压能力，保持工作效率',
     priority: 'low',
@@ -422,7 +436,7 @@ const getSkillLevel = (score) => {
 };
 
 const getSkillColor = (index) => {
-  const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+  const colors = ['#1677ff', '#52c41a', '#faad14', '#ff4d4f', '#722ed1', '#13c2c2'];
   return colors[index % colors.length];
 };
 
@@ -436,12 +450,10 @@ const getPriorityText = (priority) => {
 };
 
 const startLearningPath = (path) => {
-  console.log('开始学习路径:', path.title);
   // 这里可以实现跳转到学习页面的逻辑
 };
 
 const viewPathDetails = (path) => {
-  console.log('查看学习路径详情:', path.title);
   // 这里可以实现查看详情的逻辑
 };
 </script>
@@ -449,7 +461,7 @@ const viewPathDetails = (path) => {
 <style scoped>
 .ability-analysis-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+  background: #f5f5f5;
   padding: 20px;
 }
 
@@ -459,10 +471,10 @@ const viewPathDetails = (path) => {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 30px;
-  background: white;
+  background: #fff;
   padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .header-left {
@@ -477,7 +489,7 @@ const viewPathDetails = (path) => {
   border: 1px solid #e2e8f0;
   padding: 8px 16px;
   border-radius: 8px;
-  color: #64748b;
+  color: #666;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-bottom: 16px;
@@ -495,12 +507,12 @@ const viewPathDetails = (path) => {
 .page-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #1a1a1a;
   margin: 0 0 8px 0;
 }
 
 .breadcrumb {
-  color: #64748b;
+  color: #666;
   font-size: 0.9rem;
 }
 
@@ -514,30 +526,30 @@ const viewPathDetails = (path) => {
 }
 
 .date-label {
-  color: #64748b;
+  color: #666;
   font-size: 0.9rem;
 }
 
 .date-value {
   display: block;
-  color: #1e293b;
+  color: #1a1a1a;
   font-weight: 500;
   margin-top: 4px;
 }
 
 /* 通用卡片样式 */
 .card {
-  background: white;
-  border-radius: 16px;
+  background: #fff;
+  border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   margin-bottom: 24px;
 }
 
 .section-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #1a1a1a;
   margin: 0 0 24px 0;
 }
 
@@ -550,10 +562,10 @@ const viewPathDetails = (path) => {
 }
 
 .overview-card {
-  background: white;
-  border-radius: 16px;
+  background: #fff;
+  border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .overall-score {
@@ -566,7 +578,7 @@ const viewPathDetails = (path) => {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, #3b82f6 0deg, #3b82f6 306deg, #e5e7eb 306deg, #e5e7eb 360deg);
+  background: conic-gradient(from 0deg, #1677ff 0deg, #1677ff 306deg, #e5e7eb 306deg, #e5e7eb 360deg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -587,12 +599,12 @@ const viewPathDetails = (path) => {
 .score-number {
   font-size: 2rem;
   font-weight: 700;
-  color: #3b82f6;
+  color: #1677ff;
 }
 
 .score-label {
   font-size: 0.9rem;
-  color: #64748b;
+  color: #666;
 }
 
 .score-description {
@@ -602,12 +614,12 @@ const viewPathDetails = (path) => {
 .score-level {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #1a1a1a;
   margin: 0 0 8px 0;
 }
 
 .score-text {
-  color: #64748b;
+  color: #666;
   line-height: 1.6;
   margin: 0;
 }
@@ -619,19 +631,31 @@ const viewPathDetails = (path) => {
 }
 
 .stat-card {
-  background: white;
+  background: #fff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
 .stat-icon {
-  font-size: 2rem;
+  font-size: 1.5rem;
   width: 48px;
-  text-align: center;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1677ff;
+  background: rgba(22, 119, 255, 0.08);
+  border-radius: 10px;
+}
+
+.title-icon,
+.section-icon {
+  color: #1677ff;
+  margin-right: 8px;
 }
 
 .stat-content {
@@ -641,20 +665,20 @@ const viewPathDetails = (path) => {
 .stat-number {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #3b82f6;
+  color: #1677ff;
   display: block;
 }
 
 .stat-label {
   font-size: 0.9rem;
-  color: #64748b;
+  color: #666;
   display: block;
   margin: 4px 0;
 }
 
 .stat-detail {
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: #999;
 }
 
 /* 雷达图 */
@@ -702,7 +726,7 @@ const viewPathDetails = (path) => {
 
 .legend-value {
   font-weight: 600;
-  color: #1e293b;
+  color: #1a1a1a;
 }
 
 /* 技能详细分析 */
@@ -733,13 +757,13 @@ const viewPathDetails = (path) => {
 .skill-name {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #1a1a1a;
   margin: 0 0 4px 0;
 }
 
 .skill-category {
   font-size: 0.8rem;
-  color: #64748b;
+  color: #666;
   background: #e2e8f0;
   padding: 2px 8px;
   border-radius: 4px;
@@ -799,7 +823,7 @@ const viewPathDetails = (path) => {
 }
 
 .trend-label, .level-label {
-  color: #64748b;
+  color: #666;
 }
 
 .trend-value {
@@ -818,7 +842,7 @@ const viewPathDetails = (path) => {
 .level-value {
   margin-left: 4px;
   font-weight: 500;
-  color: #3b82f6;
+  color: #1677ff;
 }
 
 .skill-suggestions {
@@ -840,7 +864,7 @@ const viewPathDetails = (path) => {
 
 .suggestions-list li {
   font-size: 0.8rem;
-  color: #64748b;
+  color: #666;
   margin-bottom: 4px;
 }
 
@@ -866,9 +890,15 @@ const viewPathDetails = (path) => {
 }
 
 .path-icon {
-  font-size: 2rem;
+  font-size: 1.5rem;
   width: 48px;
-  text-align: center;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1677ff;
+  background: rgba(22, 119, 255, 0.08);
+  border-radius: 10px;
 }
 
 .path-info {
@@ -878,13 +908,13 @@ const viewPathDetails = (path) => {
 .path-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #1a1a1a;
   margin: 0 0 4px 0;
 }
 
 .path-description {
   font-size: 0.9rem;
-  color: #64748b;
+  color: #666;
 }
 
 .path-priority {
@@ -931,7 +961,7 @@ const viewPathDetails = (path) => {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #1677ff;
   color: white;
   display: flex;
   align-items: center;
@@ -952,7 +982,7 @@ const viewPathDetails = (path) => {
 
 .step-duration {
   font-size: 0.8rem;
-  color: #64748b;
+  color: #666;
 }
 
 .path-actions {
@@ -961,7 +991,7 @@ const viewPathDetails = (path) => {
 }
 
 .start-learning-btn {
-  background: #3b82f6;
+  background: #1677ff;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -979,8 +1009,8 @@ const viewPathDetails = (path) => {
 
 .view-details-btn {
   background: transparent;
-  color: #3b82f6;
-  border: 1px solid #3b82f6;
+  color: #1677ff;
+  border: 1px solid #1677ff;
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
@@ -991,7 +1021,7 @@ const viewPathDetails = (path) => {
 }
 
 .view-details-btn:hover {
-  background: #3b82f6;
+  background: #1677ff;
   color: white;
 }
 

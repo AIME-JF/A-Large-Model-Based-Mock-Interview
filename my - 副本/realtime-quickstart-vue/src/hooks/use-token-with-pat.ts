@@ -1,11 +1,9 @@
 const useTokenWithPat = () => {
   const getToken = () => {
-    // 请替换为您的有效PAT token
-    // 获取方式：登录 https://coze.cn -> 开发者模式 -> API密钥 -> 创建新的PAT token
-    const token = 'cztei_q1Ppd63BCcEtp7DNGekloAmdoObyCYagl77ewmIsJCO5ObTrLsWHBLDqC6c00ci9e';
+    const token = process.env.VUE_APP_COZE_PAT || '';
     
     if (!token || token.length < 10) {
-      throw new Error('PAT token未配置或无效，请在 src/hooks/use-token-with-pat.ts 中配置有效的token');
+      throw new Error('PAT token未配置或无效，请配置 VUE_APP_COZE_PAT 环境变量');
     }
     
     return token;

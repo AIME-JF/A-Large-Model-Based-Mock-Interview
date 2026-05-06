@@ -1,11 +1,11 @@
 <template>
-  <div class="radar-chart-container">
+  <div class="radar-chart-container" ref="containerRef">
     <canvas ref="canvas" class="radar-canvas"></canvas>
-    
-    <!-- 文字标签 -->
+
+    <!-- Labels -->
     <div class="label-labels">
-      <div 
-        v-for="(label, index) in labels" 
+      <div
+        v-for="(label, index) in labels"
         :key="`label-${index}`"
         class="label-item"
         :style="getLabelPosition(index)"
@@ -13,11 +13,11 @@
         <span class="label-text">{{ label }}</span>
       </div>
     </div>
-    
-    <!-- 数值标签 -->
+
+    <!-- Scores -->
     <div class="score-labels">
-      <div 
-        v-for="(score, index) in scores" 
+      <div
+        v-for="(score, index) in scores"
         :key="`score-${index}`"
         class="score-item"
         :style="getScorePosition(index)"
@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue';
+import { ref, onMounted, watch, nextTick, onUnmounted } from 'vue';
 
 const props = defineProps({
   scores: {
@@ -49,15 +49,35 @@ const props = defineProps({
 });
 
 const canvas = ref(null);
+const containerRef = ref(null);
 let ctx = null;
+const actualSize = ref(props.size);
 
-// 计算标签位置
+// Blue palette
+const COLORS = {
+  grid: 'rgba(22, 119, 255, 0.12)',
+  gridLine: 'rgba(22, 119, 255, 0.08)',
+  fill: 'rgba(22, 119, 255, 0.15)',
+  stroke: '#1677ff',
+  dot: '#1677ff',
+  dotInner: '#fff',
+};
+
+// Calculate responsive size
+const updateSize = () => {
+  if (containerRef.value) {
+    const parentWidth = containerRef.value.parentElement?.clientWidth || props.size;
+    const maxSize = Math.min(parentWidth - 80, props.size);
+    actualSize.value = Math.max(200, maxSize);
+  }
+};
+
+// Label positions
 const getLabelPosition = (index) => {
   const angle = (index * 2 * Math.PI) / props.labels.length - Math.PI / 2;
-  const radius = props.size / 2 + 40;
-  const x = Math.cos(angle) * radius + props.size / 2;
-  const y = Math.sin(angle) * radius + props.size / 2;
-  
+  const radius = actualSize.value / 2 + 40;
+  const x = Math.cos(angle) * radius + actualSize.value / 2;
+  const y = Math.sin(angle) * radius + actualSize.value / 2;
   return {
     left: `${x}px`,
     top: `${y}px`,
@@ -65,13 +85,13 @@ const getLabelPosition = (index) => {
   };
 };
 
-// 计算数值标签位置（更靠近雷达图）
 const getScorePosition = (index) => {
   const angle = (index * 2 * Math.PI) / props.labels.length - Math.PI / 2;
-  const radius = props.size / 2 + 20; // 比文字标签更靠近雷达图
-  const x = Math.cos(angle) * radius + props.size / 2;
-  const y = Math.sin(angle) * radius + props.size / 2;
-  
+  const score = props.scores[index] || 0;
+  const maxRadius = actualSize.value / 2 - 20;
+  const radius = (maxRadius * score) / 100 + 16;
+  const x = Math.cos(angle) * radius + actualSize.value / 2;
+  const y = Math.sin(angle) * radius + actualSize.value / 2;
   return {
     left: `${x}px`,
     top: `${y}px`,
@@ -79,151 +99,168 @@ const getScorePosition = (index) => {
   };
 };
 
-// 绘制雷达图
-const drawRadarChart = () => {
-  console.log('RadarChart - 开始绘制雷达图');
-  console.log('RadarChart - scores:', props.scores);
-  console.log('RadarChart - labels:', props.labels);
-  console.log('RadarChart - size:', props.size);
-  
-  if (!ctx) {
-    console.warn('RadarChart - ctx未初始化');
-    return;
-  }
-  
-  const centerX = props.size / 2;
-  const centerY = props.size / 2;
-  const maxRadius = props.size / 2 - 20;
+// Animation state
+let animationProgress = 0;
+let animationFrame = null;
+
+const drawRadarChart = (progress = 1) => {
+  if (!ctx) return;
+
+  const s = actualSize.value;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.value.width = s * dpr;
+  canvas.value.height = s * dpr;
+  canvas.value.style.width = s + 'px';
+  canvas.value.style.height = s + 'px';
+  ctx.scale(dpr, dpr);
+
+  const centerX = s / 2;
+  const centerY = s / 2;
+  const maxRadius = s / 2 - 20;
   const numPoints = props.labels.length;
-  
-  console.log('RadarChart - 绘制参数:', { centerX, centerY, maxRadius, numPoints });
-  
-  // 清空画布
-  ctx.clearRect(0, 0, props.size, props.size);
-  
-  // 绘制背景网格
+
+  ctx.clearRect(0, 0, s, s);
   drawGrid(centerX, centerY, maxRadius, numPoints);
-  
-  // 绘制数据区域
-  drawDataArea(centerX, centerY, maxRadius, numPoints);
-  
-  // 绘制数据点
-  drawDataPoints(centerX, centerY, maxRadius, numPoints);
-  
-  console.log('RadarChart - 雷达图绘制完成');
+  drawDataArea(centerX, centerY, maxRadius, numPoints, progress);
+  drawDataPoints(centerX, centerY, maxRadius, numPoints, progress);
 };
 
-// 绘制网格
-const drawGrid = (centerX, centerY, maxRadius, numPoints) => {
-  ctx.strokeStyle = 'rgba(102, 126, 234, 0.2)';
-  ctx.lineWidth = 1;
-  
-  // 绘制同心圆
-  for (let i = 1; i <= 5; i++) {
-    const radius = (maxRadius * i) / 5;
+const drawGrid = (cx, cy, maxR, n) => {
+  // Concentric polygons
+  for (let ring = 1; ring <= 5; ring++) {
+    const r = (maxR * ring) / 5;
     ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    for (let i = 0; i <= n; i++) {
+      const angle = (i * 2 * Math.PI) / n - Math.PI / 2;
+      const x = cx + Math.cos(angle) * r;
+      const y = cy + Math.sin(angle) * r;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = COLORS.grid;
+    ctx.lineWidth = 1;
     ctx.stroke();
+
+    if (ring % 2 === 0) {
+      ctx.fillStyle = 'rgba(22, 119, 255, 0.02)';
+      ctx.fill();
+    }
   }
-  
-  // 绘制放射线
-  for (let i = 0; i < numPoints; i++) {
-    const angle = (i * 2 * Math.PI) / numPoints - Math.PI / 2;
-    const x = centerX + Math.cos(angle) * maxRadius;
-    const y = centerY + Math.sin(angle) * maxRadius;
-    
+
+  // Radial lines
+  for (let i = 0; i < n; i++) {
+    const angle = (i * 2 * Math.PI) / n - Math.PI / 2;
     ctx.beginPath();
-    ctx.moveTo(centerX, centerY);
-    ctx.lineTo(x, y);
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(angle) * maxR, cy + Math.sin(angle) * maxR);
+    ctx.strokeStyle = COLORS.gridLine;
+    ctx.lineWidth = 1;
     ctx.stroke();
   }
 };
 
-// 绘制数据区域
-const drawDataArea = (centerX, centerY, maxRadius, numPoints) => {
+const drawDataArea = (cx, cy, maxR, n, progress) => {
   const points = [];
-  
-  for (let i = 0; i < numPoints; i++) {
-    const angle = (i * 2 * Math.PI) / numPoints - Math.PI / 2;
-    const score = props.scores[i];
-    const radius = (maxRadius * score) / 100;
-    const x = centerX + Math.cos(angle) * radius;
-    const y = centerY + Math.sin(angle) * radius;
-    points.push({ x, y });
+  for (let i = 0; i < n; i++) {
+    const angle = (i * 2 * Math.PI) / n - Math.PI / 2;
+    const score = (props.scores[i] || 0) * progress;
+    const r = (maxR * score) / 100;
+    points.push({
+      x: cx + Math.cos(angle) * r,
+      y: cy + Math.sin(angle) * r
+    });
   }
-  
-  // 绘制填充区域
-  ctx.fillStyle = 'rgba(102, 126, 234, 0.3)';
+
+  // Fill
   ctx.beginPath();
   ctx.moveTo(points[0].x, points[0].y);
-  
   for (let i = 1; i < points.length; i++) {
     ctx.lineTo(points[i].x, points[i].y);
   }
-  
   ctx.closePath();
+  ctx.fillStyle = COLORS.fill;
   ctx.fill();
-  
-  // 绘制边框
-  ctx.strokeStyle = 'rgba(102, 126, 234, 0.8)';
-  ctx.lineWidth = 2;
+
+  // Stroke
   ctx.beginPath();
   ctx.moveTo(points[0].x, points[0].y);
-  
   for (let i = 1; i < points.length; i++) {
     ctx.lineTo(points[i].x, points[i].y);
   }
-  
   ctx.closePath();
+  ctx.strokeStyle = COLORS.stroke;
+  ctx.lineWidth = 2;
   ctx.stroke();
 };
 
-// 绘制数据点
-const drawDataPoints = (centerX, centerY, maxRadius, numPoints) => {
-  ctx.fillStyle = 'rgba(102, 126, 234, 1)';
-  
-  for (let i = 0; i < numPoints; i++) {
-    const angle = (i * 2 * Math.PI) / numPoints - Math.PI / 2;
-    const score = props.scores[i];
-    const radius = (maxRadius * score) / 100;
-    const x = centerX + Math.cos(angle) * radius;
-    const y = centerY + Math.sin(angle) * radius;
-    
-    // 绘制圆点
+const drawDataPoints = (cx, cy, maxR, n, progress) => {
+  for (let i = 0; i < n; i++) {
+    const angle = (i * 2 * Math.PI) / n - Math.PI / 2;
+    const score = (props.scores[i] || 0) * progress;
+    const r = (maxR * score) / 100;
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+
     ctx.beginPath();
-    ctx.arc(x, y, 4, 0, 2 * Math.PI);
+    ctx.arc(x, y, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = COLORS.dot;
     ctx.fill();
-    
-    // 绘制白色内圈
-    ctx.fillStyle = 'white';
+
     ctx.beginPath();
-    ctx.arc(x, y, 2, 0, 2 * Math.PI);
+    ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
+    ctx.fillStyle = COLORS.dotInner;
     ctx.fill();
-    ctx.fillStyle = 'rgba(102, 126, 234, 1)';
   }
 };
 
-// 监听数据变化
+// Animate
+const animateChart = () => {
+  if (animationFrame) cancelAnimationFrame(animationFrame);
+  animationProgress = 0;
+
+  const animate = () => {
+    animationProgress += 0.04;
+    if (animationProgress >= 1) {
+      animationProgress = 1;
+      drawRadarChart(1);
+      return;
+    }
+    const eased = 1 - Math.pow(1 - animationProgress, 3);
+    drawRadarChart(eased);
+    animationFrame = requestAnimationFrame(animate);
+  };
+  animate();
+};
+
 watch(() => props.scores, () => {
   nextTick(() => {
-    drawRadarChart();
+    animateChart();
   });
 }, { deep: true });
 
+let resizeObserver = null;
+
 onMounted(() => {
-  console.log('RadarChart - 组件挂载');
-  console.log('RadarChart - canvas ref:', canvas.value);
-  
+  updateSize();
+
   if (canvas.value) {
     ctx = canvas.value.getContext('2d');
-    canvas.value.width = props.size;
-    canvas.value.height = props.size;
-    console.log('RadarChart - canvas尺寸设置:', props.size, 'x', props.size);
-    console.log('RadarChart - ctx获取成功:', !!ctx);
-    drawRadarChart();
-  } else {
-    console.error('RadarChart - canvas ref未找到');
+    animateChart();
   }
+
+  if (containerRef.value && window.ResizeObserver) {
+    resizeObserver = new ResizeObserver(() => {
+      updateSize();
+      nextTick(() => drawRadarChart(1));
+    });
+    resizeObserver.observe(containerRef.value.parentElement || containerRef.value);
+  }
+});
+
+onUnmounted(() => {
+  if (animationFrame) cancelAnimationFrame(animationFrame);
+  if (resizeObserver) resizeObserver.disconnect();
 });
 </script>
 
@@ -233,32 +270,16 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 20px 0;
+  margin: 16px auto;
+  width: fit-content;
 }
 
 .radar-canvas {
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  background: transparent;
 }
 
-.label-labels {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.label-item {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: auto;
-}
-
+.label-labels,
 .score-labels {
   position: absolute;
   top: 0;
@@ -268,57 +289,44 @@ onMounted(() => {
   pointer-events: none;
 }
 
+.label-item,
 .score-item {
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: auto;
 }
 
 .label-text {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  color: #333;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 4px 8px;
-  border-radius: 12px;
+  color: #1f1f1f;
+  background: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
   white-space: nowrap;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
 }
 
 .score-value {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
-  color: #667eea;
-  background: rgba(255, 255, 255, 0.9);
+  color: #1677ff;
+  background: #e6f4ff;
   padding: 2px 6px;
-  border-radius: 8px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  border: 1px solid #bae0ff;
 }
 
-/* 响应式设计 */
 @media (max-width: 768px) {
-  .radar-chart-container {
-    transform: scale(0.8);
-  }
-  
   .label-text {
-    font-size: 10px;
+    font-size: 11px;
     padding: 2px 6px;
   }
-  
-  .score-value {
-    font-size: 12px;
-    padding: 1px 4px;
-  }
-}
 
-@media (max-width: 480px) {
-  .radar-chart-container {
-    transform: scale(0.7);
+  .score-value {
+    font-size: 10px;
   }
 }
 </style>

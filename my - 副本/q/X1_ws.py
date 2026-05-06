@@ -12,6 +12,7 @@ from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
 
 import websocket  # 使用websocket_client
+from config import get_spark_config, require_spark_credentials
 answer = ""
 isFirstcontent = False
 
@@ -176,13 +177,13 @@ def checklen(text):
 
 
 if __name__ == '__main__':
-    # 以下密钥信息从服务管控页面获取：https://console.xfyun.cn/services/bmx1
-    appid = "4a5e427a"  # 填写控制台中获取的 APPID 信息
-    api_secret = "NDY4Zjk5ZmJlZjc3Y2I1NmMxYjgzZmFl"  # 填写控制台中获取的 APISecret 信息
-    api_key = "6979a54b0f455417bb35b155789aa56c"  # 填写控制台中获取的 APIKey 信息
-    domain = "x1"       #控制请求的模型版本
-    # 服务地址
-    Spark_url = "wss://spark-api.xf-yun.com/v1/x1"  #查看接口文档  https://www.xfyun.cn/doc/spark/X1ws.html
+    spark_config = get_spark_config()
+    require_spark_credentials(spark_config)
+    appid = spark_config["appid"]
+    api_secret = spark_config["api_secret"]
+    api_key = spark_config["api_key"]
+    domain = spark_config["domain"]
+    Spark_url = spark_config["spark_url"]
 
 
     while (1):
